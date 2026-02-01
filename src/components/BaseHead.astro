@@ -1,0 +1,85 @@
+---
+import "../styles/global.css";
+import { Font } from "astro:assets";
+import { ClientRouter } from "astro:transitions";
+
+interface Props {
+  title: string;
+  description?: string;
+  ogImage?: string;
+}
+
+const { title, description, ogImage } = Astro.props;
+
+const defaultDescription =
+  "Full-stack developer building fast and scalable web applications with Symfony, Laravel and modern JavaScript frameworks. APIs, Docker, automation, and production-ready systems.";
+
+const canonicalURL = new URL(
+  Astro.url.pathname,
+  Astro.site || Astro.url.origin
+);
+const socialImageURL = new URL(
+  ogImage ?? "/og-image.png",
+  Astro.site || Astro.url.origin
+).href;
+---
+
+<!-- Global Metadata -->
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="sitemap" href="/sitemap-index.xml" type="application/xml" />
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title={`${title} RSS Feed`}
+  href="/rss.xml"
+/>
+<link rel="author" href={Astro.site || Astro.url.origin} />
+<meta name="generator" content={Astro.generator} />
+
+<!-- Font preloads -->
+<Font cssVariable="--font-geist" preload />
+
+<!-- Client Router -->
+<ClientRouter />
+
+<!-- Canonical URL -->
+<link rel="canonical" href={canonicalURL} />
+
+<!-- Primary Meta Tags -->
+<title>{title}</title>
+<meta name="description" content={description ?? defaultDescription} />
+<meta name="application-name" content={title} />
+<meta name="creator" content="Hugo Charrade" />
+<meta
+  name="keywords"
+  content="Hugo Charrade,Full-stack developer,Symfony,Laravel,JavaScript,APIs,Docker,Web Development,Portfolio,Blog,Tech,Software Engineer,Automation"
+/>
+<meta name="author" content="Hugo Charrade" />
+<meta name="robots" content="index, follow" />
+<meta property="profile:first_name" content="Hugo" />
+<meta property="profile:last_name" content="Charrade" />
+
+<!-- Open Graph / Facebook -->
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description ?? defaultDescription} />
+<meta property="og:url" content={Astro.url} />
+<meta property="og:site_name" content="Hugo Charrade Portfolio" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image" content={socialImageURL} />
+<meta property="og:type" content="website" />
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:creator" content="@hvgochr" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:image:type" content="image/png" />
+<meta name="twitter:image:width" content="1200" />
+<meta name="twitter:image:height" content="630" />
+<meta name="twitter:image" content={socialImageURL} />
+<meta name="twitter:description" content={description ?? defaultDescription} />
+<meta name="twitter:url" content={Astro.url} />
