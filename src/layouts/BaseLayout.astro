@@ -1,19 +1,19 @@
 ---
-import "../styles/global.css";
-import { Font } from "astro:assets";
-import { ClientRouter } from "astro:transitions";
+import BaseHead from "../components/BaseHead.astro";
+
+interface Props {
+  title: string;
+  description?: string;
+  ogImage?: string;
+}
+
+const { title, description, ogImage } = Astro.props;
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="generator" content={Astro.generator} />
-    <ClientRouter />
-    <Font cssVariable="--font-geist" preload />
-    <title>Astro Basics</title>
+    <BaseHead title={title} description={description} ogImage={ogImage} />
   </head>
   <body>
     <slot />
