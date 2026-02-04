@@ -13,9 +13,10 @@ export default defineConfig({
   experimental: {
     fonts: [
       {
-        provider: fontProviders.google(),
         name: "Geist",
         cssVariable: "--font-geist",
+        provider: fontProviders.google(),
+        weights: ["400", "700"],
         fallbacks: ["Inter", "sans-serif"],
       },
     ],
