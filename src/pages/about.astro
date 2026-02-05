@@ -1,0 +1,98 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import H1 from "@/components/H1.astro";
+import Footer from "@/components/Footer.astro";
+---
+
+<BaseLayout
+  title="About Me - Hugo Charrade, Full-Stack Developer"
+  description="Learn more about Hugo Charrade, a Full-Stack Developer specializing in building fast and scalable web applications."
+>
+  <div
+    class="p-4 sm:pt-8 sm:px-12 pb-20 min-h-dvh flex flex-col justify-between gap-32"
+  >
+    <div class="space-y-4 sm:space-y-10">
+      <H1>Get to know me</H1>
+
+      <div class="space-y-8 pt-12">
+        <h2 class="text-2xl font-semibold text-zinc-200 tracking-wider">
+          Who am I?
+        </h2>
+
+        <div class="space-y-4 sm:space-y-6">
+          <p class="text-lg text-zinc-400 text-balance">
+            Hi, I'm <strong>Hugo</strong>, a <strong
+              >full-stack developer</strong
+            >
+            based in <strong>France</strong>. I build fast, reliable web
+            applications and APIs using <strong>Symfony</strong>, <strong
+              >Laravel</strong
+            > and modern <strong>JavaScript</strong> frameworks.
+          </p>
+          <p class="text-lg text-zinc-400 text-balance">
+            I currently work at <strong>BM Services</strong>, where I develop
+            and maintain production e-commerce platforms using <strong
+              >Symfony</strong
+            >. I started there as an intern during my studies, continued through
+            an apprenticeship, and stayed full-time after graduating. This gave
+            me a strong real-world experience shipping and maintaining software,
+            not just building demos.
+          </p>
+          <p class="text-lg text-zinc-400 text-balance">
+            Outside of work, I enjoy building side projects, self-hosting
+            services, experimenting with automation, and learning new tools. I
+            like understanding how things work under the hood and shipping
+            clean, practical solutions.
+          </p>
+          <p class="text-lg text-zinc-400 text-balance">
+            I'm currently open to <strong>new opportunities</strong> and exciting
+            projects. If you'd like to work together, feel free to
+            <a
+              href="/contact"
+              class="underline underline-offset-4 decoration-zinc-400 hover:text-zinc-50 hover:decoration-zinc-200"
+            >
+              reach out!
+            </a>
+          </p>
+        </div>
+      </div>
+
+      <div class="space-y-10 pt-12">
+        <h2 class="text-2xl font-semibold text-zinc-200 tracking-wider">
+          My journey
+        </h2>
+
+        <div class="grid gap-12 md:grid-cols-2">
+          <div class="space-y-4">
+            <h3 class="text-xl font-semibold text-zinc-300 tracking-wide">
+              Professional
+            </h3>
+            <ul class="list-disc list-inside text-zinc-400 space-y-2">
+              <li>
+                <strong>BM Services</strong> - Full-Stack Developer (September 2024
+                - Present)
+              </li>
+              <li>
+                <strong>BM Services</strong> - Intern & Apprentice (April 2023 - September
+                2024)
+              </li>
+            </ul>
+          </div>
+
+          <div class="space-y-4">
+            <h3 class="text-xl font-semibold text-zinc-300 tracking-wide">
+              Education
+            </h3>
+            <ul class="list-disc list-inside text-zinc-400 space-y-2">
+              <li>
+                <strong>Bachelor's Degree in Computer Science</strong> - UIT Montpellier
+                / Sète (2021 - 2024)
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <Footer />
+  </div>
+</BaseLayout>
