@@ -18,4 +18,27 @@ export const articles = defineCollection({
     }),
 });
 
-export const collections = { articles };
+export const projects = defineCollection({
+  loader: glob({ pattern: "**/[^_]*.mdx", base: "./src/content/projects" }),
+  schema: ({ image }) =>
+    z.object({
+      cover: image(),
+      coverAlt: z.string(),
+      title: z.string(),
+      description: z.string(),
+      categories: z.array(z.string()).optional().default([]),
+      links: z
+        .array(
+          z.object({
+            label: z.string(),
+            url: z.string().url(),
+          })
+        )
+        .optional()
+        .default([]),
+      pubDate: z.coerce.date(),
+      isDraft: z.boolean().default(false),
+    }),
+});
+
+export const collections = { articles, projects };
