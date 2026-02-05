@@ -1,0 +1,94 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import H1 from "@/components/H1.astro";
+import Footer from "@/components/Footer.astro";
+import { formatDate } from "@/lib/utils";
+import { getCollection } from "astro:content";
+
+export async function getStaticPaths() {
+  const articles = (await getCollection("articles")).filter(
+    (article) => !article.data.isDraft
+  );
+
+  const categories = new Set<string>();
+  articles.forEach((article) => {
+    article.data.categories.forEach((cat) => categories.add(cat));
+  });
+
+  const allCategories = Array.from(categories).sort();
+
+  return allCategories.map((category) => ({
+    params: { category },
+    props: {
+      articles: articles
+        .filter((article) => article.data.categories.includes(category))
+        .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()),
+      allCategories,
+    },
+  }));
+}
+
+const { category } = Astro.params;
+const { articles, allCategories } = Astro.props;
+---
+
+<BaseLayout
+  title={`Blog: ${category} - Hugo Charrade`}
+  description={`Articles about ${category} by Hugo Charrade, a Full-Stack Developer.`}
+>
+  <main>
+    <div class="p-4 sm:pt-8 sm:px-12 pb-20 min-h-dvh">
+      <H1>Blog: {category}</H1>
+
+      <div class="space-y-4 sm:space-y-12 mt-4">
+        <ul class="flex items-center gap-4">
+          <li>
+            <a
+              href="/blog"
+              class="w-fit px-4 py-1 text-sm bg-transparent rounded-full transition-all duration-300 ease-in-out text-zinc-400 hover:text-zinc-200"
+            >
+              All
+            </a>
+          </li>
+          {
+            allCategories.map((cat) => (
+              <li>
+                <a
+                  href={`/blog/category/${cat}`}
+                  class={`w-fit px-4 py-1 text-sm bg-transparent rounded-full transition-all duration-300 ease-in-out ${
+                    cat === category
+                      ? "text-white bg-zinc-100/20 outline outline-2 outline-offset-2 outline-zinc-100/20"
+                      : "text-zinc-400 hover:text-zinc-200"
+                  }`}
+                >
+                  {cat}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+
+        <ul class="space-y-6">
+          {
+            articles.map((article) => (
+              <li>
+                <a href={`/blog/${article.id}`} class="space-y-1 group">
+                  <h2 class="text-xl xl:text-2xl text-zinc-300 group-hover:text-white text-balance font-medium underline group-hover:underline-offset-2 decoration-transparent group-hover:decoration-zinc-500">
+                    {article.data.title}
+                  </h2>
+                  <p class="text-base text-zinc-400">
+                    {article.data.description}
+                  </p>
+                  <p class="text-sm text-zinc-500">
+                    {formatDate(article.data.pubDate)}
+                  </p>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <Footer />
+    </div>
+  </main>
+</BaseLayout>
