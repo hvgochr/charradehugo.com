@@ -15,7 +15,7 @@ const pathname = Astro.url.pathname;
   class:list={[
     "w-fit group flex items-center gap-1 text-base hover:text-zinc-100 cursor-pointer",
     { "text-zinc-100": pathname === href },
-    { "text-zinc-500": pathname !== href },
+    { "text-zinc-400": pathname !== href },
   ]}
 >
   <slot />
