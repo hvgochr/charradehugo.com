@@ -4,6 +4,7 @@ import H1 from "@/components/H1.astro";
 import Footer from "@/components/Footer.astro";
 import { formatDate } from "@/lib/utils";
 import { getCollection } from "astro:content";
+import { Image } from "astro:assets";
 
 export async function getStaticPaths() {
   const articles = (await getCollection("articles")).filter(
@@ -72,16 +73,30 @@ const { articles, allCategories } = Astro.props;
           {
             articles.map((article) => (
               <li>
-                <a href={`/blog/${article.id}`} class="space-y-1 group">
-                  <h2 class="text-xl xl:text-2xl text-zinc-300 group-hover:text-white text-balance font-medium underline group-hover:underline-offset-2 decoration-transparent group-hover:decoration-zinc-500">
-                    {article.data.title}
-                  </h2>
-                  <p class="text-base text-zinc-400">
-                    {article.data.description}
-                  </p>
-                  <p class="text-sm text-zinc-500">
-                    {formatDate(article.data.pubDate)}
-                  </p>
+                <a
+                  href={`/blog/${article.id}`}
+                  class="flex flex-col sm:flex-row gap-4 group"
+                >
+                  <div class="sm:w-48 sm:h-32 w-full h-48 shrink-0 overflow-hidden rounded-md bg-zinc-900">
+                    <Image
+                      src={article.data.cover}
+                      alt={article.data.coverAlt}
+                      width={800}
+                      height={400}
+                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                  <div class="flex-1 space-y-2 min-w-0">
+                    <h2 class="text-xl xl:text-2xl text-zinc-300 group-hover:text-white text-balance font-medium underline group-hover:underline-offset-2 decoration-transparent group-hover:decoration-zinc-500">
+                      {article.data.title}
+                    </h2>
+                    <p class="text-base text-zinc-400 line-clamp-2">
+                      {article.data.description}
+                    </p>
+                    <p class="text-sm text-zinc-500">
+                      {formatDate(article.data.pubDate)}
+                    </p>
+                  </div>
                 </a>
               </li>
             ))
