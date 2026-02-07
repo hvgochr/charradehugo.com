@@ -22,16 +22,16 @@ const { Content, headings } = await render(project);
   title={`${project.data.title} - Hugo Charrade, Full-Stack Developer`}
   description={project.data.description}
 >
-  <div class="max-w-4xl">
-    <div class="mb-8 space-y-4">
+  <div class="max-w-6xl mx-auto">
+    <header class="mb-8 space-y-3">
+      <p class="text-sm text-zinc-500">{formatDate(project.data.pubDate)}</p>
       <h1 class="text-4xl md:text-5xl font-bold text-white text-balance">
         {project.data.title}
       </h1>
       <p class="text-lg text-zinc-400">{project.data.description}</p>
-      <p class="text-sm text-zinc-500">{formatDate(project.data.pubDate)}</p>
-    </div>
+    </header>
 
-    <div class="mb-8 rounded-xl overflow-hidden">
+    <div class="mb-12 rounded-xl overflow-hidden">
       <Image
         src={project.data.cover}
         alt={project.data.coverAlt}
@@ -41,10 +41,18 @@ const { Content, headings } = await render(project);
       />
     </div>
 
-    <Prose>
-      <Content />
-    </Prose>
-  </div>
+    <div class="flex gap-12">
+      <article class="flex-1 min-w-0">
+        <Prose>
+          <Content />
+        </Prose>
+      </article>
 
-  <TableOfContents headings={headings} />
+      <aside class="hidden xl:block w-64 shrink-0">
+        <div class="sticky top-8">
+          <TableOfContents headings={headings} />
+        </div>
+      </aside>
+    </div>
+  </div>
 </ContentLayout>
