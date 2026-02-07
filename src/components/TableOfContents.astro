@@ -14,31 +14,29 @@ const { headings } = Astro.props;
 
 {
   headings.length > 0 && (
-    <nav class="hidden xl:block fixed top-32 right-8 w-64 max-h-[calc(100vh-10rem)] overflow-y-auto">
-      <div class="space-y-2">
-        <h2 class="text-lg font-semibold text-zinc-200 tracking-wide mb-4">
-          On this page
-        </h2>
-        <ul class="space-y-2 text-sm">
-          {headings.map((heading) => (
-            <li
-              class:list={[
-                "toc-item",
-                heading.depth === 3 && "pl-4",
-                heading.depth === 4 && "pl-8",
-              ]}
+    <nav class="space-y-2">
+      <h2 class="text-lg font-semibold text-zinc-300 tracking-wide mb-4">
+        On this page
+      </h2>
+      <ul class="space-y-2 text-sm">
+        {headings.map((heading) => (
+          <li
+            class:list={[
+              "toc-item",
+              heading.depth === 3 && "pl-4",
+              heading.depth === 4 && "pl-8",
+            ]}
+          >
+            <a
+              href={`#${heading.slug}`}
+              class="block text-zinc-400 hover:text-zinc-200 transition-colors toc-link"
+              data-heading-id={heading.slug}
             >
-              <a
-                href={`#${heading.slug}`}
-                class="block text-zinc-500 hover:text-zinc-200 transition-colors toc-link"
-                data-heading-id={heading.slug}
-              >
-                {heading.text}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
+              {heading.text}
+            </a>
+          </li>
+        ))}
+      </ul>
     </nav>
   )
 }
@@ -47,23 +45,6 @@ const { headings } = Astro.props;
   .toc-link.active {
     color: rgb(244 244 245);
     font-weight: 500;
-  }
-
-  nav::-webkit-scrollbar {
-    width: 4px;
-  }
-
-  nav::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  nav::-webkit-scrollbar-thumb {
-    background: rgb(63 63 70);
-    border-radius: 2px;
-  }
-
-  nav::-webkit-scrollbar-thumb:hover {
-    background: rgb(82 82 91);
   }
 </style>
 
