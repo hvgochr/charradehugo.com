@@ -4,3 +4,12 @@
 @theme inline {
   --font-sans: var(--font-geist);
 }
+
+.scrollbar-hidden {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}
