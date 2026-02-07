@@ -2,7 +2,7 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import H1 from "@/components/H1.astro";
 import CurrentStatus from "@/components/CurrentStatus.astro";
-import Link from "@/components/Link.astro";
+import Button from "@/components/Button.astro";
 import Navigation from "@/components/Navigation.astro";
 ---
 
@@ -31,14 +31,14 @@ import Navigation from "@/components/Navigation.astro";
           <CurrentStatus className="py-4" />
           <div class="mb-2 sm:mb-4 flex items-center justify-between">
             <div class="flex items-center gap-4">
-              <Link href="/contact">Get in Touch</Link>
+              <Button href="/contact">Get in Touch</Button>
             </div>
 
             <Navigation>
-              <Link href="/about" variant="secondary">About</Link>
-              <Link href="/blog" variant="secondary">Blog</Link>
-              <Link href="/projects" variant="secondary">Projects</Link>
-              <Link href="/contact" variant="secondary">Contact</Link>
+              <Button href="/about" variant="secondary">About</Button>
+              <Button href="/blog" variant="secondary">Blog</Button>
+              <Button href="/projects" variant="secondary">Projects</Button>
+              <Button href="/contact" variant="secondary">Contact</Button>
             </Navigation>
           </div>
         </div>
