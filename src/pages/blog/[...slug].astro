@@ -1,7 +1,6 @@
 ---
-import BaseLayout from "@/layouts/BaseLayout.astro";
+import ContentLayout from "@/layouts/ContentLayout.astro";
 import Prose from "@/components/Prose.astro";
-import Footer from "@/components/Footer.astro";
 import { getCollection, render } from "astro:content";
 
 export async function getStaticPaths() {
@@ -16,16 +15,11 @@ const article = Astro.props;
 const { Content } = await render(article);
 ---
 
-<BaseLayout
+<ContentLayout
   title={`${article.data.title} - Hugo Charrade, Full-Stack Developer`}
   description={article.data.description}
 >
-  <main>
-    <div class="p-4 sm:pt-8 sm:px-12 pb-20 min-h-dvh">
-      <Prose>
-        <Content />
-      </Prose>
-      <Footer />
-    </div>
-  </main>
-</BaseLayout>
+  <Prose>
+    <Content />
+  </Prose>
+</ContentLayout>
