@@ -1,72 +1,65 @@
 ---
-import BaseLayout from "@/layouts/BaseLayout.astro";
+import ContentLayout from "@/layouts/ContentLayout.astro";
 import H1 from "@/components/H1.astro";
 import ExternalLink from "@/components/ExternalLink.astro";
-import Footer from "@/components/Footer.astro";
 ---
 
-<BaseLayout
+<ContentLayout
   title="Contact - Hugo Charrade, Full-Stack Developer"
   description="Get in touch with Hugo Charrade, Full-Stack Developer. Find out how to contact him for potential collaborations or job opportunities."
 >
-  <main>
-    <div
-      class="p-4 sm:pt-8 sm:px-12 pb-20 min-h-dvh flex flex-col justify-between gap-32"
-    >
-      <div>
-        <H1>Let's get in touch</H1>
+  <div class="flex flex-col justify-between gap-32">
+    <div>
+      <H1>Let's get in touch</H1>
 
-        <p
-          class="mt-4 md:mt-8 lg:mt-12 text-xl xl:text-2xl text-zinc-400 text-balance"
+      <p
+        class="mt-4 md:mt-8 lg:mt-12 text-xl xl:text-2xl text-zinc-400 text-balance"
+      >
+        I'm always open to discussing new projects, or opportunities to be part
+        of your visions. Feel free to reach out to me through any of the
+        platforms below, or send me an email. I'll do my best to get back to you
+        as soon as possible!
+      </p>
+
+      <div class="mt-6 sm:mt-12 flex flex-col gap-1">
+        <a
+          href="mailto:charrade.hugo@gmail.com"
+          class="mb-8 w-fit group flex items-center gap-1 text-base lg:text-xl text-zinc-400 hover:text-zinc-50"
         >
-          I'm always open to discussing new projects, or opportunities to be
-          part of your visions. Feel free to reach out to me through any of the
-          platforms below, or send me an email. I'll do my best to get back to
-          you as soon as possible!
-        </p>
-
-        <div class="mt-6 sm:mt-12 flex flex-col gap-1">
-          <a
-            href="mailto:charrade.hugo@gmail.com"
-            class="mb-8 w-fit group flex items-center gap-1 text-base lg:text-xl text-zinc-400 hover:text-zinc-50"
+          charrade.hugo@gmail.com
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="-rotate-45 group-hover:rotate-0 transition-all duration-300 ease-in-out"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
           >
-            charrade.hugo@gmail.com
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="-rotate-45 group-hover:rotate-0 transition-all duration-300 ease-in-out"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-            >
-              <title>Arrow Icon</title>
-              <path
-                fill="currentColor"
-                d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2S2 6.477 2 12s4.477 10 10 10"
-                opacity=".5"></path>
-              <path
-                fill="currentColor"
-                d="M13.53 8.47a.75.75 0 1 0-1.06 1.06l1.72 1.72H8a.75.75 0 0 0 0 1.5h6.19l-1.72 1.72a.75.75 0 1 0 1.06 1.06l3-3a.75.75 0 0 0 0-1.06z"
-              ></path>
-            </svg>
-          </a>
+            <title>Arrow Icon</title>
+            <path
+              fill="currentColor"
+              d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2S2 6.477 2 12s4.477 10 10 10"
+              opacity=".5"></path>
+            <path
+              fill="currentColor"
+              d="M13.53 8.47a.75.75 0 1 0-1.06 1.06l1.72 1.72H8a.75.75 0 0 0 0 1.5h6.19l-1.72 1.72a.75.75 0 1 0 1.06 1.06l3-3a.75.75 0 0 0 0-1.06z"
+            ></path>
+          </svg>
+        </a>
 
-          <ExternalLink href="https://x.com/hvgochr">Twitter</ExternalLink>
-          <ExternalLink
-            href="https://www.linkedin.com/in/hugo-charrade-844a8b230/"
-          >
-            LinkedIn
-          </ExternalLink>
-          <ExternalLink href="https://github.com/hvgochr">GitHub</ExternalLink>
-        </div>
+        <ExternalLink href="https://x.com/hvgochr">Twitter</ExternalLink>
+        <ExternalLink
+          href="https://www.linkedin.com/in/hugo-charrade-844a8b230/"
+        >
+          LinkedIn
+        </ExternalLink>
+        <ExternalLink href="https://github.com/hvgochr">GitHub</ExternalLink>
       </div>
-
-      <div>
-        <p class="text-base text-zinc-400">
-          Looking forward to connecting with you!
-        </p>
-      </div>
-
-      <Footer />
     </div>
-  </main>
-</BaseLayout>
+
+    <div>
+      <p class="text-base text-zinc-400">
+        Looking forward to connecting with you!
+      </p>
+    </div>
+  </div>
+</ContentLayout>
