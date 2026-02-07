@@ -1,8 +1,8 @@
 ---
-type Props = {
+interface Props {
   className?: string;
   size?: "default" | "large";
-};
+}
 
 const { size = "default", className } = Astro.props;
 ---

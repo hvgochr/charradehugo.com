@@ -3,9 +3,9 @@ import { Image } from "astro:assets";
 import { formatDate } from "@/lib/utils";
 import type { CollectionEntry } from "astro:content";
 
-type Props = {
+interface Props {
   project: CollectionEntry<"projects">;
-};
+}
 
 const { project } = Astro.props;
 ---
