@@ -2,6 +2,7 @@
 import ContentLayout from "@/layouts/ContentLayout.astro";
 import Prose from "@/components/Prose.astro";
 import TableOfContents from "@/components/TableOfContents.astro";
+import ProjectCard from "@/components/ProjectCard.astro";
 import { getCollection, render } from "astro:content";
 import { Image } from "astro:assets";
 import { formatDate } from "@/lib/utils";
@@ -16,6 +17,11 @@ export async function getStaticPaths() {
 
 const project = Astro.props;
 const { Content, headings } = await render(project);
+
+const allProjects = (await getCollection("projects"))
+  .filter((p) => !p.data.isDraft && p.id !== project.id)
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 3);
 ---
 
 <ContentLayout
@@ -55,9 +61,26 @@ const { Content, headings } = await render(project);
       </aside>
     </div>
 
+    {
+      allProjects.length > 0 && (
+        <div class="mt-16 pt-12 border-t border-zinc-800">
+          <h2 class="text-2xl font-semibold text-zinc-200 mb-6">
+            Recent Projects
+          </h2>
+          <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {allProjects.map((relatedProject) => (
+              <li>
+                <ProjectCard project={relatedProject} />
+              </li>
+            ))}
+          </ul>
+        </div>
+      )
+    }
+
     <div class="mt-12 pt-8 border-t border-zinc-800">
       <a
-        href="/blog"
+        href="/projects"
         class="inline-flex items-center gap-2 text-zinc-400 hover:text-zinc-200 transition-colors"
       >
         <svg
@@ -73,7 +96,7 @@ const { Content, headings } = await render(project);
             d="M10.4697 8.46967C10.7626 8.17678 11.2374 8.17678 11.5303 8.46967C11.8232 8.76256 11.8232 9.23744 11.5303 9.53033L9.81066 11.25H16C16.4142 11.25 16.75 11.5858 16.75 12C16.75 12.4142 16.4142 12.75 16 12.75H9.81066L11.5303 14.4697C11.8232 14.7626 11.8232 15.2374 11.5303 15.5303C11.2374 15.8232 10.7626 15.8232 10.4697 15.5303L7.46967 12.5303C7.17678 12.2374 7.17678 11.7626 7.46967 11.4697L10.4697 8.46967Z"
             fill="currentColor"></path></svg
         >
-        Back to Blog
+        Back to Projects
       </a>
     </div>
   </div>
