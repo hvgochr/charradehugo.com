@@ -42,32 +42,34 @@ const { articles, allCategories } = Astro.props;
       <H1>Blog: {category}</H1>
 
       <div class="space-y-4 sm:space-y-12 mt-4">
-        <ul class="flex items-center gap-4">
-          <li>
-            <a
-              href="/blog"
-              class="w-fit px-4 py-1 text-sm bg-transparent rounded-full transition-all duration-300 ease-in-out text-zinc-400 hover:text-zinc-200"
-            >
-              All
-            </a>
-          </li>
-          {
-            allCategories.map((cat) => (
-              <li>
-                <a
-                  href={`/blog/category/${cat}`}
-                  class={`w-fit px-4 py-1 text-sm bg-transparent rounded-full transition-all duration-300 ease-in-out ${
-                    cat === category
-                      ? "text-white bg-zinc-100/20 outline outline-2 outline-offset-2 outline-zinc-100/20"
-                      : "text-zinc-400 hover:text-zinc-200"
-                  }`}
-                >
-                  {cat}
-                </a>
-              </li>
-            ))
-          }
-        </ul>
+        <div class="w-full overflow-x-auto scrollbar-hidden py-2">
+          <ul class="flex items-center gap-4 min-w-max px-1">
+            <li>
+              <a
+                href="/blog"
+                class="w-fit px-4 py-1 text-sm bg-transparent rounded-full transition-all duration-300 ease-in-out text-zinc-400 hover:text-zinc-200"
+              >
+                All
+              </a>
+            </li>
+            {
+              allCategories.map((cat) => (
+                <li>
+                  <a
+                    href={`/blog/category/${cat}`}
+                    class={`w-fit px-4 py-1 text-sm bg-transparent rounded-full transition-all duration-300 ease-in-out ${
+                      cat === category
+                        ? "text-white bg-zinc-100/20 outline outline-2 outline-offset-2 outline-zinc-100/20"
+                        : "text-zinc-400 hover:text-zinc-200"
+                    }`}
+                  >
+                    {cat}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
 
         <ul class="space-y-6">
           {
