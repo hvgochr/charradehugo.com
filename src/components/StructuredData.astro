@@ -1,8 +1,6 @@
 ---
 interface Props {
-  schema:
-    | Record<string, unknown>
-    | Record<string, unknown>[];
+  schema: Record<string, unknown> | Record<string, unknown>[];
 }
 
 const { schema } = Astro.props;
@@ -12,9 +10,6 @@ const schemaArray = Array.isArray(schema) ? schema : [schema];
 
 {
   schemaArray.map((item) => (
-    <script
-      type="application/ld+json"
-      set:html={JSON.stringify(item)}
-    />
+    <script type="application/ld+json" set:html={JSON.stringify(item)} />
   ))
 }
