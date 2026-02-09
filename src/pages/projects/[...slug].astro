@@ -27,6 +27,8 @@ const allProjects = (await getCollection("projects"))
 <ContentLayout
   title={`${project.data.title} - Hugo Charrade, Full-Stack Developer`}
   description={project.data.description}
+  articleDate={project.data.pubDate}
+  articleModified={project.data.updateDate}
 >
   <div class="max-w-6xl mx-auto">
     <header class="mb-8 space-y-3">
