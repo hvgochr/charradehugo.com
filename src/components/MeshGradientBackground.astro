@@ -1,0 +1,117 @@
+---
+interface Props {
+  colors?: string[];
+  positions?: number;
+  waveX?: number;
+  waveXShift?: number;
+  waveY?: number;
+  waveYShift?: number;
+  mixing?: number;
+  grainMixer?: number;
+  grainOverlay?: number;
+  scale?: number;
+  rotation?: number;
+}
+
+const {
+  colors = ["#0a0a0a", "#1a1a2e", "#16213e", "#0f3460"],
+  positions = 50,
+  waveX = 0.3,
+  waveXShift = 0,
+  waveY = 0.2,
+  waveYShift = 0,
+  mixing = 0.5,
+  grainMixer = 0.1,
+  grainOverlay = 0.05,
+  scale = 1,
+  rotation = 0,
+} = Astro.props;
+
+const config = JSON.stringify({
+  colors,
+  positions,
+  waveX,
+  waveXShift,
+  waveY,
+  waveYShift,
+  mixing,
+  grainMixer,
+  grainOverlay,
+  scale,
+  rotation,
+});
+---
+
+<div class="static-mesh-gradient" data-config={config}></div>
+
+<style>
+  .static-mesh-gradient {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+  }
+
+  .static-mesh-gradient :global(canvas) {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+</style>
+
+<script>
+  import {
+    ShaderMount,
+    staticMeshGradientFragmentShader,
+    getShaderColorFromString,
+    ShaderFitOptions,
+    type StaticMeshGradientParams,
+    type ShaderMountUniforms,
+  } from "@paper-design/shaders";
+
+  function initStaticMeshGradient(container: HTMLElement) {
+    const configAttr = container.dataset.config;
+    if (!configAttr) return;
+
+    const config = JSON.parse(configAttr) as StaticMeshGradientParams;
+    const colors = (config.colors ?? []).map(getShaderColorFromString);
+
+    const uniforms: ShaderMountUniforms = {
+      u_colors: colors,
+      u_colorsCount: colors.length,
+      u_positions: config.positions ?? 50,
+      u_waveX: config.waveX ?? 0.3,
+      u_waveXShift: config.waveXShift ?? 0,
+      u_waveY: config.waveY ?? 0.2,
+      u_waveYShift: config.waveYShift ?? 0,
+      u_mixing: config.mixing ?? 0.5,
+      u_grainMixer: config.grainMixer ?? 0.1,
+      u_grainOverlay: config.grainOverlay ?? 0.05,
+      u_fit: ShaderFitOptions.cover,
+      u_scale: config.scale ?? 1,
+      u_rotation: config.rotation ?? 0,
+      u_originX: 0.5,
+      u_originY: 0.5,
+      u_offsetX: 0,
+      u_offsetY: 0,
+      u_worldWidth: 1920,
+      u_worldHeight: 1080,
+    };
+
+    new ShaderMount(
+      container,
+      staticMeshGradientFragmentShader,
+      uniforms,
+      { alpha: true },
+      0
+    );
+  }
+
+  document.addEventListener("astro:page-load", () => {
+    document
+      .querySelectorAll<HTMLElement>(".static-mesh-gradient")
+      .forEach((el) => {
+        initStaticMeshGradient(el);
+      });
+  });
+</script>
