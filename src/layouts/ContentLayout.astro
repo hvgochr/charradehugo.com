@@ -6,12 +6,21 @@ interface Props {
   title: string;
   description?: string;
   ogImage?: string;
+  articleDate?: Date;
+  articleModified?: Date;
 }
 
-const { title, description, ogImage } = Astro.props;
+const { title, description, ogImage, articleDate, articleModified } =
+  Astro.props;
 ---
 
-<BaseLayout title={title} description={description} ogImage={ogImage}>
+<BaseLayout
+  title={title}
+  description={description}
+  ogImage={ogImage}
+  articleDate={articleDate}
+  articleModified={articleModified}
+>
   <main>
     <div class="p-4 sm:pt-8 sm:px-12 pb-20 min-h-dvh">
       <slot />

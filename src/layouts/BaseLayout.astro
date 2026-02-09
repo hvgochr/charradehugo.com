@@ -5,15 +5,24 @@ interface Props {
   title: string;
   description?: string;
   ogImage?: string;
+  articleDate?: Date;
+  articleModified?: Date;
 }
 
-const { title, description, ogImage } = Astro.props;
+const { title, description, ogImage, articleDate, articleModified } =
+  Astro.props;
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
-    <BaseHead title={title} description={description} ogImage={ogImage} />
+    <BaseHead
+      title={title}
+      description={description}
+      ogImage={ogImage}
+      articleDate={articleDate}
+      articleModified={articleModified}
+    />
   </head>
   <body class="font-sans min-h-screen bg-zinc-900">
     <slot />
