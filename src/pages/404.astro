@@ -1,0 +1,42 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import H1 from "@/components/H1.astro";
+import Button from "@/components/Button.astro";
+import { createBreadcrumbSchema } from "@/lib/structuredData";
+
+const siteUrl = Astro.site?.toString() || Astro.url.origin;
+
+const structuredData = [
+  createBreadcrumbSchema([
+    { name: "Home", url: new URL("/", siteUrl).href },
+    { name: "404", url: new URL("/404", siteUrl).href },
+  ]),
+] as Record<string, unknown>[];
+---
+
+<BaseLayout
+  title="Page Not Found - Hugo Charrade, Full-Stack Developer"
+  structuredData={structuredData}
+>
+  <main>
+    <div class="w-full min-h-dvh flex items-center justify-center px-4 sm:px-8">
+      <div class="max-w-2xl w-full text-center">
+        <div class="mb-8 flex flex-col items-center">
+          <p class="text-zinc-500 text-xl sm:text-2xl mb-4">404</p>
+          <H1 size="default">Page Not Found</H1>
+          <p class="mt-6 text-zinc-400 text-lg sm:text-xl max-w-lg mx-auto">
+            Sorry, the page you're looking for doesn't exist or has been moved.
+          </p>
+        </div>
+
+        <div
+          class="flex flex-col sm:flex-row gap-4 justify-center items-center"
+        >
+          <Button href="/" variant="primary">Back to Home</Button>
+          <Button href="/blog" variant="secondary">Read Blog</Button>
+          <Button href="/projects" variant="secondary">View Projects</Button>
+        </div>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
