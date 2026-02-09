@@ -4,7 +4,7 @@ import H1 from "@/components/H1.astro";
 import CurrentStatus from "@/components/CurrentStatus.astro";
 import Button from "@/components/Button.astro";
 import Navigation from "@/components/Navigation.astro";
-import WarpBackground from "@/components/WarpBackground.astro";
+import MeshGradientBackground from "@/components/MeshGradientBackground.astro";
 import { createWebSiteSchema, createPersonSchema } from "@/lib/structuredData";
 
 const siteUrl = Astro.site?.toString() || Astro.url.origin;
@@ -24,12 +24,13 @@ const structuredData = [
       class="group relative w-full min-h-dvh flex items-center justify-center"
     >
       <div class="absolute w-full h-dvh -z-10">
-        <WarpBackground
-          colors={["#09090b", "#27272a", "#52525b"]}
-          speed={0.6}
-          swirl={0.5}
-          swirlIterations={10}
-          rotation={0.5}
+        <MeshGradientBackground
+          colors={["#0a0a0a", "#1c1c1c", "#2d2d2d", "#404040", "#525252"]}
+          waveX={0.3}
+          waveY={0.2}
+          mixing={0.5}
+          grainMixer={0.1}
+          grainOverlay={0.05}
         />
       </div>
 
