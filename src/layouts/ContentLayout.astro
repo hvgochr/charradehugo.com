@@ -8,10 +8,17 @@ interface Props {
   ogImage?: string;
   articleDate?: Date;
   articleModified?: Date;
+  structuredData?: Record<string, unknown> | Record<string, unknown>[];
 }
 
-const { title, description, ogImage, articleDate, articleModified } =
-  Astro.props;
+const {
+  title,
+  description,
+  ogImage,
+  articleDate,
+  articleModified,
+  structuredData,
+} = Astro.props;
 ---
 
 <BaseLayout
@@ -20,6 +27,7 @@ const { title, description, ogImage, articleDate, articleModified } =
   ogImage={ogImage}
   articleDate={articleDate}
   articleModified={articleModified}
+  structuredData={structuredData}
 >
   <main>
     <div class="p-4 sm:pt-8 sm:px-12 pb-20 min-h-dvh">
