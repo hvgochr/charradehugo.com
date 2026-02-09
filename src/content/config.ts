@@ -11,6 +11,7 @@ const articles = defineCollection({
       description: z.string(),
       categories: z.array(z.string()).optional().default([]),
       pubDate: z.coerce.date(),
+      updateDate: z.coerce.date().optional(),
       readingTime: z.number().int().positive().optional(),
       wordsCount: z.number().int().positive().optional(),
       isDraft: z.boolean().default(false),
@@ -37,6 +38,7 @@ const projects = defineCollection({
         .optional()
         .default([]),
       pubDate: z.coerce.date(),
+      updateDate: z.coerce.date().optional(),
       isDraft: z.boolean().default(false),
     }),
 });
