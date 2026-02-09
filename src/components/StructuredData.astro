@@ -10,6 +10,10 @@ const schemaArray = Array.isArray(schema) ? schema : [schema];
 
 {
   schemaArray.map((item) => (
-    <script type="application/ld+json" set:html={JSON.stringify(item)} />
+    <script
+      is:inline
+      type="application/ld+json"
+      set:html={JSON.stringify(item)}
+    />
   ))
 }
