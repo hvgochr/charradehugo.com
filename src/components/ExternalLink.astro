@@ -2,9 +2,10 @@
 interface Props {
   href: string;
   openNewTab?: boolean;
+  ariaLabel?: string;
 }
 
-const { href, openNewTab = true } = Astro.props;
+const { href, openNewTab = true, ariaLabel } = Astro.props;
 
 const pathname = Astro.url.pathname;
 
@@ -15,6 +16,7 @@ const isActive =
 <a
   href={href}
   target={openNewTab ? "_blank" : "_self"}
+  aria-label={ariaLabel}
   class:list={[
     "w-fit group flex items-center gap-1 text-base hover:text-zinc-100 cursor-pointer",
     { "text-zinc-100": isActive },
