@@ -3,13 +3,15 @@ interface Props {
   href: string;
   className?: string;
   variant?: "primary" | "secondary";
+  download?: boolean;
 }
 
-const { href, variant = "primary", className } = Astro.props;
+const { href, variant = "primary", className, download = false } = Astro.props;
 ---
 
 <a
   href={href}
+  download={download}
   class:list={[
     "w-fit text-base sm:text-2xl px-5 py-2 rounded-full transition-all duration-300 ease-in-out whitespace-nowrap",
     variant === "primary" &&
