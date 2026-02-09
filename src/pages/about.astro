@@ -1,6 +1,7 @@
 ---
 import ContentLayout from "@/layouts/ContentLayout.astro";
 import H1 from "@/components/H1.astro";
+import Button from "@/components/Button.astro";
 import {
   createPersonSchema,
   createBreadcrumbSchema,
@@ -67,6 +68,10 @@ const structuredData = [
             </a>
           </p>
         </div>
+
+        <Button href="/resume.pdf" variant="primary" download={true}>
+          Download Resume
+        </Button>
       </div>
 
       <div class="space-y-10">
