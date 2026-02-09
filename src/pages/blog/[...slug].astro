@@ -6,6 +6,10 @@ import ArticleCard from "@/components/ArticleCard.astro";
 import { getCollection, render } from "astro:content";
 import { Image } from "astro:assets";
 import { formatDate } from "@/lib/utils";
+import {
+  createArticleSchema,
+  createBreadcrumbSchema,
+} from "@/lib/structuredData";
 
 export async function getStaticPaths() {
   const articles = await getCollection("articles");
@@ -22,6 +26,18 @@ const allArticles = (await getCollection("articles"))
   .filter((a) => !a.data.isDraft && a.id !== article.id)
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
   .slice(0, 3);
+
+const siteUrl = Astro.site?.toString() || Astro.url.origin;
+const articleUrl = new URL(`/blog/${article.id}`, siteUrl).href;
+
+const structuredData = [
+  createArticleSchema(article, siteUrl, articleUrl),
+  createBreadcrumbSchema([
+    { name: "Home", url: new URL("/", siteUrl).href },
+    { name: "Blog", url: new URL("/blog", siteUrl).href },
+    { name: article.data.title, url: articleUrl },
+  ]),
+] as Record<string, unknown>[];
 ---
 
 <ContentLayout
@@ -29,6 +45,7 @@ const allArticles = (await getCollection("articles"))
   description={article.data.description}
   articleDate={article.data.pubDate}
   articleModified={article.data.updateDate}
+  structuredData={structuredData}
 >
   <div class="max-w-5xl mx-auto">
     <header class="mb-8 space-y-3">

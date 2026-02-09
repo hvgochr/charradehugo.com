@@ -1,11 +1,26 @@
 ---
 import ContentLayout from "@/layouts/ContentLayout.astro";
 import H1 from "@/components/H1.astro";
+import {
+  createPersonSchema,
+  createBreadcrumbSchema,
+} from "@/lib/structuredData";
+
+const siteUrl = Astro.site?.toString() || Astro.url.origin;
+
+const structuredData = [
+  createPersonSchema(siteUrl),
+  createBreadcrumbSchema([
+    { name: "Home", url: new URL("/", siteUrl).href },
+    { name: "About", url: new URL("/about", siteUrl).href },
+  ]),
+] as Record<string, unknown>[];
 ---
 
 <ContentLayout
   title="About Me - Hugo Charrade, Full-Stack Developer"
   description="Learn more about Hugo Charrade, a Full-Stack Developer specializing in building fast and scalable web applications."
+  structuredData={structuredData}
 >
   <div class="flex flex-col justify-between gap-32">
     <div class="space-y-4 sm:space-y-10">

@@ -4,9 +4,20 @@ import H1 from "@/components/H1.astro";
 import CurrentStatus from "@/components/CurrentStatus.astro";
 import Button from "@/components/Button.astro";
 import Navigation from "@/components/Navigation.astro";
+import { createWebSiteSchema, createPersonSchema } from "@/lib/structuredData";
+
+const siteUrl = Astro.site?.toString() || Astro.url.origin;
+
+const structuredData = [
+  createWebSiteSchema(siteUrl),
+  createPersonSchema(siteUrl),
+] as Record<string, unknown>[];
 ---
 
-<BaseLayout title="Hugo Charrade - Full-Stack Developer">
+<BaseLayout
+  title="Hugo Charrade - Full-Stack Developer"
+  structuredData={structuredData}
+>
   <main>
     <div
       class="group relative w-full min-h-dvh flex items-center justify-center"
