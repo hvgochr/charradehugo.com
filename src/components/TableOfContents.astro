@@ -9,7 +9,7 @@ interface Props {
   headings: Heading[];
 }
 
-const { headings } = Astro.props;
+const { headings = [] } = Astro.props;
 ---
 
 {

@@ -5,7 +5,7 @@ interface Props {
 
 const { schema } = Astro.props;
 
-const schemaArray = Array.isArray(schema) ? schema : [schema];
+const schemaArray = (Array.isArray(schema) ? schema : [schema]).filter(Boolean);
 ---
 
 {
