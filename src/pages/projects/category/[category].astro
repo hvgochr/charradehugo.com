@@ -3,26 +3,18 @@ import ContentLayout from "@/layouts/ContentLayout.astro";
 import H1 from "@/components/H1.astro";
 import CategoryFilter from "@/components/CategoryFilter.astro";
 import ProjectCard from "@/components/ProjectCard.astro";
-import { getCollection } from "astro:content";
+import { getPublishedProjects, getCategories } from "@/lib/content";
 
 export async function getStaticPaths() {
-  const projects = (await getCollection("projects")).filter(
-    (project) => !project.data.isDraft
-  );
-
-  const categories = new Set<string>();
-  projects.forEach((project) => {
-    project.data.categories.forEach((cat) => categories.add(cat));
-  });
-
-  const allCategories = Array.from(categories).sort();
+  const projects = await getPublishedProjects();
+  const allCategories = getCategories(projects);
 
   return allCategories.map((category) => ({
     params: { category },
     props: {
-      projects: projects
-        .filter((project) => project.data.categories.includes(category))
-        .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()),
+      projects: projects.filter((project) =>
+        project.data.categories.includes(category)
+      ),
       allCategories,
     },
   }));

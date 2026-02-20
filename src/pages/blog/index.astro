@@ -3,15 +3,10 @@ import ContentLayout from "@/layouts/ContentLayout.astro";
 import H1 from "@/components/H1.astro";
 import CategoryFilter from "@/components/CategoryFilter.astro";
 import ArticleCard from "@/components/ArticleCard.astro";
-import { getCollection } from "astro:content";
+import { getPublishedArticles, getCategories } from "@/lib/content";
 
-const articles = (await getCollection("articles"))
-  .filter((article) => !article.data.isDraft)
-  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
-
-const categories = Array.from(
-  new Set(articles.flatMap((article) => article.data.categories))
-).sort();
+const articles = await getPublishedArticles();
+const categories = getCategories(articles);
 ---
 
 <ContentLayout

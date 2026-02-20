@@ -3,16 +3,17 @@ import ContentLayout from "@/layouts/ContentLayout.astro";
 import Prose from "@/components/Prose.astro";
 import TableOfContents from "@/components/TableOfContents.astro";
 import ArticleCard from "@/components/ArticleCard.astro";
-import { getCollection, render } from "astro:content";
+import { render } from "astro:content";
 import { Image } from "astro:assets";
 import { formatDate } from "@/lib/utils";
+import { getPublishedArticles } from "@/lib/content";
 import {
   createArticleSchema,
   createBreadcrumbSchema,
 } from "@/lib/structuredData";
 
 export async function getStaticPaths() {
-  const articles = await getCollection("articles");
+  const articles = await getPublishedArticles();
   return articles.map((article) => ({
     params: { slug: article.id },
     props: article,
@@ -22,9 +23,8 @@ export async function getStaticPaths() {
 const article = Astro.props;
 const { Content, headings } = await render(article);
 
-const allArticles = (await getCollection("articles"))
-  .filter((a) => !a.data.isDraft && a.id !== article.id)
-  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+const allArticles = (await getPublishedArticles())
+  .filter((a) => a.id !== article.id)
   .slice(0, 3);
 
 const siteUrl = Astro.site?.toString() || Astro.url.origin;

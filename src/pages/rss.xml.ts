@@ -1,5 +1,5 @@
 import rss from "@astrojs/rss";
-import { getCollection } from "astro:content";
+import { getPublishedArticles } from "@/lib/content";
 import type { APIContext } from "astro";
 
 export async function GET(context: APIContext) {
@@ -7,9 +7,7 @@ export async function GET(context: APIContext) {
     return new Response("Site URL is not configured.", { status: 500 });
   }
 
-  const articles = (await getCollection("articles"))
-    .filter((article) => !article.data.isDraft)
-    .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+  const articles = await getPublishedArticles();
 
   return rss({
     title: "Hugo Charrade - Blog",
