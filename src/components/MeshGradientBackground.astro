@@ -60,18 +60,21 @@ const config = JSON.stringify({
 </style>
 
 <script>
-  import {
-    ShaderMount,
-    staticMeshGradientFragmentShader,
-    getShaderColorFromString,
-    ShaderFitOptions,
-    type StaticMeshGradientParams,
-    type ShaderMountUniforms,
-  } from "@paper-design/shaders";
-
-  function initStaticMeshGradient(container: HTMLElement) {
+  async function initStaticMeshGradient(container: HTMLElement) {
     const configAttr = container.dataset.config;
     if (!configAttr) return;
+
+    const {
+      ShaderMount,
+      staticMeshGradientFragmentShader,
+      getShaderColorFromString,
+      ShaderFitOptions,
+    } = await import("@paper-design/shaders");
+
+    type StaticMeshGradientParams =
+      import("@paper-design/shaders").StaticMeshGradientParams;
+    type ShaderMountUniforms =
+      import("@paper-design/shaders").ShaderMountUniforms;
 
     const config = JSON.parse(configAttr) as StaticMeshGradientParams;
     const colors = (config.colors ?? []).map(getShaderColorFromString);
