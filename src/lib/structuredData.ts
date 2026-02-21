@@ -55,6 +55,13 @@ export interface BreadcrumbList extends Record<string, unknown> {
   }>;
 }
 
+export type StructuredDataSchema =
+  | Person
+  | Article
+  | WebSite
+  | BreadcrumbList
+  | Array<Person | Article | WebSite | BreadcrumbList>;
+
 /**
  * Generates a Person schema for Hugo Charrade.
  *
