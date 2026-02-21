@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import Footer from "@/components/Footer.astro";
+import type { StructuredDataSchema } from "@/lib/structuredData";
 
 interface Props {
   title: string;
@@ -8,7 +9,7 @@ interface Props {
   ogImage?: string;
   articleDate?: Date;
   articleModified?: Date;
-  structuredData?: Record<string, unknown> | Record<string, unknown>[];
+  structuredData?: StructuredDataSchema;
 }
 
 const {
