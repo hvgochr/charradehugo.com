@@ -1,6 +1,8 @@
 ---
+import type { StructuredDataSchema } from "@/lib/structuredData";
+
 interface Props {
-  schema: Record<string, unknown> | Record<string, unknown>[];
+  schema: StructuredDataSchema;
 }
 
 const { schema } = Astro.props;
