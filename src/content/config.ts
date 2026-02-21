@@ -6,7 +6,7 @@ const articles = defineCollection({
   schema: ({ image }) =>
     z.object({
       cover: image(),
-      coverAlt: z.string(),
+      coverAlt: z.string().min(1, "Cover alt text must not be empty"),
       title: z.string(),
       description: z.string(),
       categories: z.array(z.string()).optional().default([]),
@@ -24,7 +24,7 @@ const projects = defineCollection({
   schema: ({ image }) =>
     z.object({
       cover: image(),
-      coverAlt: z.string(),
+      coverAlt: z.string().min(1, "Cover alt text must not be empty"),
       title: z.string(),
       description: z.string(),
       categories: z.array(z.string()).optional().default([]),
