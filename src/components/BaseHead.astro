@@ -3,6 +3,7 @@ import "../styles/global.css";
 import { Font } from "astro:assets";
 import { ClientRouter } from "astro:transitions";
 import StructuredData from "./StructuredData.astro";
+import type { StructuredDataSchema } from "@/lib/structuredData";
 
 interface Props {
   title: string;
@@ -10,7 +11,7 @@ interface Props {
   ogImage?: string;
   articleDate?: Date;
   articleModified?: Date;
-  structuredData?: Record<string, unknown> | Record<string, unknown>[];
+  structuredData?: StructuredDataSchema;
 }
 
 const {
