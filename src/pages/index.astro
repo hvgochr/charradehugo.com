@@ -12,7 +12,7 @@ const siteUrl = Astro.site?.toString() || Astro.url.origin;
 const structuredData = [
   createWebSiteSchema(siteUrl),
   createPersonSchema(siteUrl),
-] as Record<string, unknown>[];
+];
 ---
 
 <BaseLayout

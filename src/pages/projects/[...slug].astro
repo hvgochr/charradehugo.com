@@ -31,7 +31,7 @@ const structuredData = createBreadcrumbSchema([
   { name: "Home", url: new URL("/", siteUrl).href },
   { name: "Projects", url: new URL("/projects", siteUrl).href },
   { name: project.data.title, url: projectUrl },
-]) as Record<string, unknown>;
+]);
 ---
 
 <ContentLayout
