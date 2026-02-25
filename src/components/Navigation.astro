@@ -292,61 +292,53 @@ const { class: className } = Astro.props;
 </style>
 
 <script>
-  const toggle = document.getElementById("nav-toggle");
-  const close = document.getElementById("nav-close");
-  const desktop = document.getElementById("nav-desktop");
-  const mobile = document.getElementById("nav-mobile") as HTMLDialogElement;
-  const icon = toggle?.querySelector(".nav-icon");
+  document.addEventListener("astro:page-load", () => {
+    const toggle = document.getElementById("nav-toggle");
+    const close = document.getElementById("nav-close");
+    const desktop = document.getElementById("nav-desktop");
+    const mobile = document.getElementById("nav-mobile") as HTMLDialogElement;
+    const icon = toggle?.querySelector(".nav-icon");
 
-  let isOpen = false;
+    let isOpen = false;
 
-  function openNav() {
-    isOpen = true;
-    toggle?.setAttribute("aria-expanded", "true");
-    desktop?.setAttribute("data-state", "open");
-    mobile?.setAttribute("data-state", "open");
-    icon?.setAttribute("data-state", "open");
+    function openNav() {
+      isOpen = true;
+      toggle?.setAttribute("aria-expanded", "true");
+      desktop?.setAttribute("data-state", "open");
+      mobile?.setAttribute("data-state", "open");
+      icon?.setAttribute("data-state", "open");
 
-    // Move focus to the first focusable element inside the dialog
-    const firstLink = mobile?.querySelector<HTMLElement>("a, button");
-    firstLink?.focus();
-  }
-
-  function closeNav() {
-    isOpen = false;
-    toggle?.setAttribute("aria-expanded", "false");
-    desktop?.setAttribute("data-state", "closing");
-    mobile?.setAttribute("data-state", "closing");
-    icon?.setAttribute("data-state", "closed");
-
-    setTimeout(() => {
-      desktop?.setAttribute("data-state", "closed");
-      mobile?.setAttribute("data-state", "closed");
-    }, 250);
-
-    // Return focus to the toggle button
-    toggle?.focus();
-  }
-
-  toggle?.addEventListener("click", () => {
-    if (isOpen) {
-      closeNav();
-    } else {
-      openNav();
+      const firstLink = mobile?.querySelector<HTMLElement>("a, button");
+      firstLink?.focus();
     }
-  });
 
-  close?.addEventListener("click", closeNav);
-  mobile?.addEventListener("click", (e) => {
-    if (e.target === mobile) {
-      closeNav();
-    }
-  });
+    function closeNav() {
+      isOpen = false;
+      toggle?.setAttribute("aria-expanded", "false");
+      desktop?.setAttribute("data-state", "closing");
+      mobile?.setAttribute("data-state", "closing");
+      icon?.setAttribute("data-state", "closed");
 
-  // Close on Escape key
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && isOpen) {
-      closeNav();
+      setTimeout(() => {
+        desktop?.setAttribute("data-state", "closed");
+        mobile?.setAttribute("data-state", "closed");
+      }, 250);
+
+      toggle?.focus();
     }
+
+    toggle?.addEventListener("click", () => {
+      if (isOpen) closeNav();
+      else openNav();
+    });
+
+    close?.addEventListener("click", closeNav);
+    mobile?.addEventListener("click", (e) => {
+      if (e.target === mobile) closeNav();
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && isOpen) closeNav();
+    });
   });
 </script>
