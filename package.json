@@ -19,6 +19,7 @@
     "@astrojs/sitemap": "^3.7.0",
     "@paper-design/shaders": "^0.0.71",
     "@tailwindcss/vite": "^4.1.18",
+    "@vercel/analytics": "^1.6.1",
     "astro": "^5.16.11",
     "tailwindcss": "^4.1.18"
   },
