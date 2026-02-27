@@ -2,6 +2,8 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import Footer from "@/components/Footer.astro";
 import type { StructuredDataSchema } from "@/lib/structuredData";
+import type { Locale } from "@/lib/i18n";
+import { getLocaleFromUrl } from "@/lib/i18n";
 
 interface Props {
   title: string;
@@ -20,6 +22,8 @@ const {
   articleModified,
   structuredData,
 } = Astro.props;
+
+const locale: Locale = getLocaleFromUrl(Astro.url);
 ---
 
 <BaseLayout
@@ -35,5 +39,5 @@ const {
       <slot />
     </div>
   </main>
-  <Footer />
+  <Footer locale={locale} />
 </BaseLayout>
