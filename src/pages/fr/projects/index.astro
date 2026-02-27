@@ -1,0 +1,33 @@
+---
+import ContentLayout from "@/layouts/ContentLayout.astro";
+import H1 from "@/components/H1.astro";
+import CategoryFilter from "@/components/CategoryFilter.astro";
+import ProjectCard from "@/components/ProjectCard.astro";
+import { getPublishedProjects, getCategories } from "@/lib/content";
+import { useTranslations } from "@/lib/i18n";
+
+const t = useTranslations("fr");
+const projects = await getPublishedProjects("fr");
+const categories = getCategories(projects);
+---
+
+<ContentLayout
+  title={t.projects.metaTitle}
+  description={t.projects.metaDescription}
+>
+  <H1>{t.projects.h1}</H1>
+
+  <div class="space-y-4 sm:space-y-12 mt-4">
+    <CategoryFilter categories={categories} basePath="/fr/projects" />
+
+    <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {
+        projects.map((project) => (
+          <li>
+            <ProjectCard project={project} basePath="/fr/projects" />
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</ContentLayout>

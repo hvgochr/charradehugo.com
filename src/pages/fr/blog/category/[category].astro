@@ -1,0 +1,52 @@
+---
+import ContentLayout from "@/layouts/ContentLayout.astro";
+import H1 from "@/components/H1.astro";
+import CategoryFilter from "@/components/CategoryFilter.astro";
+import ArticleCard from "@/components/ArticleCard.astro";
+import { getPublishedArticles, getCategories } from "@/lib/content";
+import { useTranslations } from "@/lib/i18n";
+
+export async function getStaticPaths() {
+  const articles = await getPublishedArticles("fr");
+  const allCategories = getCategories(articles);
+
+  return allCategories.map((category) => ({
+    params: { category },
+    props: {
+      articles: articles.filter((article) =>
+        article.data.categories.includes(category)
+      ),
+      allCategories,
+    },
+  }));
+}
+
+const t = useTranslations("fr");
+const { category } = Astro.params;
+const { articles, allCategories } = Astro.props;
+---
+
+<ContentLayout
+  title={`${t.blog.categoryPrefix}: ${category} - Hugo Charrade, Développeur Full-Stack`}
+  description={`Articles sur ${category} par Hugo Charrade, développeur Full-Stack spécialisé dans la création d'applications web rapides et évolutives.`}
+>
+  <H1>{t.blog.categoryPrefix}: {category}</H1>
+
+  <div class="space-y-4 sm:space-y-12 mt-4">
+    <CategoryFilter
+      categories={allCategories}
+      currentCategory={category}
+      basePath="/fr/blog"
+    />
+
+    <ul class="space-y-6">
+      {
+        articles.map((article) => (
+          <li>
+            <ArticleCard article={article} basePath="/fr/blog" />
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</ContentLayout>

@@ -1,0 +1,94 @@
+---
+import ContentLayout from "@/layouts/ContentLayout.astro";
+import H1 from "@/components/H1.astro";
+import Button from "@/components/Button.astro";
+import {
+  createPersonSchema,
+  createBreadcrumbSchema,
+} from "@/lib/structuredData";
+import { useTranslations } from "@/lib/i18n";
+
+const t = useTranslations("fr");
+const siteUrl = Astro.site?.toString() || Astro.url.origin;
+
+const structuredData = [
+  createPersonSchema(siteUrl),
+  createBreadcrumbSchema([
+    { name: t.about.breadcrumbHome, url: new URL("/fr", siteUrl).href },
+    { name: t.about.breadcrumbAbout, url: new URL("/fr/about", siteUrl).href },
+  ]),
+];
+---
+
+<ContentLayout
+  title={t.about.metaTitle}
+  description={t.about.metaDescription}
+  structuredData={structuredData}
+>
+  <div class="flex flex-col justify-between gap-32">
+    <div class="space-y-4 sm:space-y-10">
+      <H1>{t.about.h1}</H1>
+
+      <div class="space-y-8">
+        <h2 class="text-2xl font-semibold text-zinc-200 tracking-wider">
+          {t.about.whoAmI}
+        </h2>
+
+        <div class="space-y-4 sm:space-y-6">
+          <p
+            class="text-lg text-zinc-400 text-balance"
+            set:html={t.about.bio1}
+          />
+          <p
+            class="text-lg text-zinc-400 text-balance"
+            set:html={t.about.bio2}
+          />
+          <p
+            class="text-lg text-zinc-400 text-balance"
+            set:html={t.about.bio3}
+          />
+          <p class="text-lg text-zinc-400 text-balance">
+            <span set:html={t.about.bio4} />
+            {" "}
+            <a
+              href="/fr/contact"
+              class="underline underline-offset-4 decoration-zinc-400 hover:text-zinc-50 hover:decoration-zinc-200"
+            >
+              {t.about.bio4Link}
+            </a>
+          </p>
+        </div>
+
+        <Button href="/resume.pdf" variant="primary" download={true}>
+          {t.about.downloadResume}
+        </Button>
+      </div>
+
+      <div class="space-y-10">
+        <h2 class="text-2xl font-semibold text-zinc-200 tracking-wider">
+          {t.about.journey}
+        </h2>
+
+        <div class="grid gap-12 md:grid-cols-2">
+          <div class="space-y-4">
+            <h3 class="text-xl font-semibold text-zinc-300 tracking-wide">
+              {t.about.professional}
+            </h3>
+            <ul class="list-disc list-inside text-zinc-400 space-y-2">
+              {t.about.jobs.map((job) => <li set:html={job} />)}
+            </ul>
+          </div>
+
+          <div class="space-y-4">
+            <h3 class="text-xl font-semibold text-zinc-300 tracking-wide">
+              {t.about.education}
+            </h3>
+            <ul class="list-disc list-inside text-zinc-400 space-y-2">
+              {t.about.degrees.map((degree) => <li set:html={degree} />)}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ContentLayout>
