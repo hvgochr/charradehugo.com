@@ -4,9 +4,10 @@ import H1 from "@/components/H1.astro";
 import CategoryFilter from "@/components/CategoryFilter.astro";
 import ProjectCard from "@/components/ProjectCard.astro";
 import { getPublishedProjects, getCategories } from "@/lib/content";
+import { useTranslations } from "@/lib/i18n";
 
 export async function getStaticPaths() {
-  const projects = await getPublishedProjects();
+  const projects = await getPublishedProjects("en");
   const allCategories = getCategories(projects);
 
   return allCategories.map((category) => ({
@@ -20,15 +21,16 @@ export async function getStaticPaths() {
   }));
 }
 
+const t = useTranslations("en");
 const { category } = Astro.params;
 const { projects, allCategories } = Astro.props;
 ---
 
 <ContentLayout
-  title={`Projects: ${category} - Hugo Charrade, Full-Stack Developer`}
+  title={`${t.projects.categoryPrefix}: ${category} - Hugo Charrade, Full-Stack Developer`}
   description={`Projects about ${category} by Hugo Charrade, a Full-Stack Developer specializing in building fast and scalable web applications.`}
 >
-  <H1>Projects: {category}</H1>
+  <H1>{t.projects.categoryPrefix}: {category}</H1>
 
   <div class="space-y-4 sm:space-y-12 mt-4">
     <CategoryFilter
@@ -41,7 +43,7 @@ const { projects, allCategories } = Astro.props;
       {
         projects.map((project) => (
           <li>
-            <ProjectCard project={project} />
+            <ProjectCard project={project} basePath="/projects" />
           </li>
         ))
       }

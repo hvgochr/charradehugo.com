@@ -8,24 +8,26 @@ import { Image } from "astro:assets";
 import { formatDate } from "@/lib/utils";
 import { createBreadcrumbSchema } from "@/lib/structuredData";
 import { getPublishedProjects } from "@/lib/content";
+import { getSlug, useTranslations } from "@/lib/i18n";
 
 export async function getStaticPaths() {
-  const projects = await getPublishedProjects();
+  const projects = await getPublishedProjects("en");
   return projects.map((project) => ({
-    params: { slug: project.id },
+    params: { slug: getSlug(project.id) },
     props: project,
   }));
 }
 
+const t = useTranslations("en");
 const project = Astro.props;
 const { Content, headings } = await render(project);
 
-const allProjects = (await getPublishedProjects())
+const allProjects = (await getPublishedProjects("en"))
   .filter((p) => p.id !== project.id)
   .slice(0, 3);
 
 const siteUrl = Astro.site?.toString() || Astro.url.origin;
-const projectUrl = new URL(`/projects/${project.id}`, siteUrl).href;
+const projectUrl = new URL(`/projects/${getSlug(project.id)}`, siteUrl).href;
 
 const structuredData = createBreadcrumbSchema([
   { name: "Home", url: new URL("/", siteUrl).href },
@@ -78,12 +80,12 @@ const structuredData = createBreadcrumbSchema([
       allProjects.length > 0 && (
         <div class="mt-16 pt-12 border-t border-zinc-800">
           <h2 class="text-2xl font-semibold text-zinc-200 mb-6">
-            Recent Projects
+            {t.projects.recentProjects}
           </h2>
           <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {allProjects.map((relatedProject) => (
               <li>
-                <ProjectCard project={relatedProject} />
+                <ProjectCard project={relatedProject} basePath="/projects" />
               </li>
             ))}
           </ul>
@@ -111,7 +113,7 @@ const structuredData = createBreadcrumbSchema([
             d="M10.4697 8.46967C10.7626 8.17678 11.2374 8.17678 11.5303 8.46967C11.8232 8.76256 11.8232 9.23744 11.5303 9.53033L9.81066 11.25H16C16.4142 11.25 16.75 11.5858 16.75 12C16.75 12.4142 16.4142 12.75 16 12.75H9.81066L11.5303 14.4697C11.8232 14.7626 11.8232 15.2374 11.5303 15.5303C11.2374 15.8232 10.7626 15.8232 10.4697 15.5303L7.46967 12.5303C7.17678 12.2374 7.17678 11.7626 7.46967 11.4697L10.4697 8.46967Z"
             fill="currentColor"></path></svg
         >
-        Back to Projects
+        {t.projects.backToProjects}
       </a>
     </div>
   </div>

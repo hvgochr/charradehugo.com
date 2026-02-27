@@ -4,16 +4,15 @@ import H1 from "@/components/H1.astro";
 import CategoryFilter from "@/components/CategoryFilter.astro";
 import ArticleCard from "@/components/ArticleCard.astro";
 import { getPublishedArticles, getCategories } from "@/lib/content";
+import { useTranslations } from "@/lib/i18n";
 
-const articles = await getPublishedArticles();
+const t = useTranslations("en");
+const articles = await getPublishedArticles("en");
 const categories = getCategories(articles);
 ---
 
-<ContentLayout
-  title="Blog - Hugo Charrade, Full-Stack Developer"
-  description="Read the latest articles and insights from Hugo Charrade, a Full-Stack Developer specializing in building fast and scalable web applications."
->
-  <H1>Blog</H1>
+<ContentLayout title={t.blog.metaTitle} description={t.blog.metaDescription}>
+  <H1>{t.blog.h1}</H1>
 
   <div class="space-y-4 sm:space-y-12 mt-4">
     <CategoryFilter categories={categories} basePath="/blog" />
@@ -22,7 +21,7 @@ const categories = getCategories(articles);
       {
         articles.map((article) => (
           <li>
-            <ArticleCard article={article} />
+            <ArticleCard article={article} basePath="/blog" />
           </li>
         ))
       }
