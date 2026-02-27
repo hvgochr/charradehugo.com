@@ -1,17 +1,20 @@
 ---
 import { Image } from "astro:assets";
 import { formatDate } from "@/lib/utils";
+import { getSlug } from "@/lib/i18n";
 import type { CollectionEntry } from "astro:content";
 
 interface Props {
   project: CollectionEntry<"projects">;
+  basePath?: string;
 }
 
-const { project } = Astro.props;
+const { project, basePath = "/projects" } = Astro.props;
+const slug = getSlug(project.id);
 ---
 
 <a
-  href={`/projects/${project.id}`}
+  href={`${basePath}/${slug}`}
   class="block group overflow-hidden rounded-lg border border-zinc-800 hover:border-zinc-700 transition-all duration-300"
 >
   <div class="aspect-video overflow-hidden bg-zinc-900">
