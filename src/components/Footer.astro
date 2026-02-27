@@ -1,12 +1,25 @@
 ---
 import ExternalLink from "./ExternalLink.astro";
+import type { Locale } from "@/lib/i18n";
+import { useTranslations, getLocalePath } from "@/lib/i18n";
+
+interface Props {
+  locale?: Locale;
+}
+
+const { locale = "en" } = Astro.props;
+const t = useTranslations(locale);
 ---
 
 <footer
   class="py-4 px-4 sm:px-12 w-full fixed bottom-0 flex items-center gap-4 sm:gap-8 backdrop-blur bg-zinc-900/70"
 >
   <div class="flex gap-1">
-    <ExternalLink href="/" openNewTab={false} ariaLabel="Home">
+    <ExternalLink
+      href={getLocalePath(locale, "/")}
+      openNewTab={false}
+      ariaLabel="Home"
+    >
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
@@ -24,8 +37,16 @@ import ExternalLink from "./ExternalLink.astro";
 
   <p class="text-zinc-400">/</p>
 
-  <ExternalLink href="/about" openNewTab={false}>About</ExternalLink>
-  <ExternalLink href="/blog" openNewTab={false}>Blog</ExternalLink>
-  <ExternalLink href="/projects" openNewTab={false}>Projects</ExternalLink>
-  <ExternalLink href="/contact" openNewTab={false}>Contact</ExternalLink>
+  <ExternalLink href={getLocalePath(locale, "/about")} openNewTab={false}
+    >{t.footer.about}</ExternalLink
+  >
+  <ExternalLink href={getLocalePath(locale, "/blog")} openNewTab={false}
+    >{t.footer.blog}</ExternalLink
+  >
+  <ExternalLink href={getLocalePath(locale, "/projects")} openNewTab={false}
+    >{t.footer.projects}</ExternalLink
+  >
+  <ExternalLink href={getLocalePath(locale, "/contact")} openNewTab={false}
+    >{t.footer.contact}</ExternalLink
+  >
 </footer>

@@ -1,4 +1,7 @@
 ---
+import type { Locale } from "@/lib/i18n";
+import { useTranslations, getLocaleFromUrl } from "@/lib/i18n";
+
 interface Heading {
   depth: number;
   slug: string;
@@ -7,16 +10,18 @@ interface Heading {
 
 interface Props {
   headings: Heading[];
+  locale?: Locale;
 }
 
-const { headings = [] } = Astro.props;
+const { headings = [], locale = getLocaleFromUrl(Astro.url) } = Astro.props;
+const t = useTranslations(locale);
 ---
 
 {
   headings.length > 0 && (
     <nav class="space-y-2">
       <h2 class="text-lg font-semibold text-zinc-300 tracking-wide mb-4">
-        On this page
+        {t.tableOfContents.onThisPage}
       </h2>
       <ul class="space-y-2 text-sm">
         {headings.map((heading) => (

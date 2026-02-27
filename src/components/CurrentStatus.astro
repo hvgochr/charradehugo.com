@@ -1,5 +1,14 @@
 ---
-const { className } = Astro.props;
+import type { Locale } from "@/lib/i18n";
+import { useTranslations, getLocaleFromUrl } from "@/lib/i18n";
+
+interface Props {
+  className?: string;
+  locale?: Locale;
+}
+
+const { className, locale = getLocaleFromUrl(Astro.url) } = Astro.props;
+const t = useTranslations(locale);
 ---
 
 <div class:list={["flex items-center gap-2", className]}>
@@ -9,5 +18,5 @@ const { className } = Astro.props;
     ></span>
     <span class="relative inline-flex size-2 rounded-full bg-zinc-100"></span>
   </span>
-  <p class="text-zinc-300">Available for opportunities</p>
+  <p class="text-zinc-300">{t.currentStatus.available}</p>
 </div>
