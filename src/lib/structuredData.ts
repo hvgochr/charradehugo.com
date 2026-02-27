@@ -69,14 +69,18 @@ export type StructuredDataSchema =
  * @param siteUrl - The base URL of the site
  * @returns Person schema object for structured data
  */
-export function createPersonSchema(siteUrl: string, locale: Locale = "en"): Person {
+export function createPersonSchema(
+  siteUrl: string,
+  locale: Locale = "en"
+): Person {
   return {
     "@context": "https://schema.org",
     "@type": "Person",
     name: "Hugo Charrade",
     url: new URL("/", siteUrl).href,
     image: new URL("/og-image.png", siteUrl).href,
-    jobTitle: locale === "fr" ? "Développeur Full-Stack" : "Full-Stack Developer",
+    jobTitle:
+      locale === "fr" ? "Développeur Full-Stack" : "Full-Stack Developer",
     description:
       locale === "fr"
         ? "Développeur full-stack spécialisé dans la création d'applications web rapides et évolutives avec Symfony, Laravel et les frameworks JavaScript modernes."
@@ -110,7 +114,10 @@ export function createOrganizationSchema(siteUrl: string): Organization {
  * @param siteUrl - The base URL of the site
  * @returns WebSite schema object for structured data
  */
-export function createWebSiteSchema(siteUrl: string, locale: Locale = "en"): WebSite {
+export function createWebSiteSchema(
+  siteUrl: string,
+  locale: Locale = "en"
+): WebSite {
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",

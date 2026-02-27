@@ -39,9 +39,10 @@ const siteOrigin = (Astro.site || Astro.url.origin)
 const locale = getLocaleFromUrl(Astro.url);
 const ogLocale = locale === "fr" ? "fr_FR" : "en_US";
 
-const defaultDescription = locale === "fr"
-  ? "Développeur full-stack spécialisé dans la création d'applications web rapides et évolutives avec Symfony, Laravel et les frameworks JavaScript modernes."
-  : "Full-stack developer building fast and scalable web applications with Symfony, Laravel and modern JavaScript frameworks.";
+const defaultDescription =
+  locale === "fr"
+    ? "Développeur full-stack spécialisé dans la création d'applications web rapides et évolutives avec Symfony, Laravel et les frameworks JavaScript modernes."
+    : "Full-stack developer building fast and scalable web applications with Symfony, Laravel and modern JavaScript frameworks.";
 
 const barePath = Astro.url.pathname.replace(/^\/fr(\/|$)/, "/");
 const enURL = `${siteOrigin}${getLocalePath("en", barePath)}`;
