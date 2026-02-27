@@ -1,5 +1,6 @@
 import rss from "@astrojs/rss";
 import { getPublishedArticles } from "@/lib/content";
+import { getSlug } from "@/lib/i18n";
 import type { APIContext } from "astro";
 
 export async function GET(context: APIContext) {
@@ -18,7 +19,7 @@ export async function GET(context: APIContext) {
       title: article.data.title,
       description: article.data.description,
       pubDate: article.data.pubDate,
-      link: `/blog/${article.id}/`,
+      link: `/blog/${getSlug(article.id)}/`,
       categories: article.data.categories,
     })),
     customData: `<language>en-us</language>`,
