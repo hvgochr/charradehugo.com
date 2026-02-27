@@ -1,0 +1,47 @@
+---
+import type { Locale } from "@/lib/i18n";
+import { getLocalePath, useTranslations } from "@/lib/i18n";
+
+interface Props {
+  locale: Locale;
+  currentPath: string;
+}
+
+const { locale, currentPath } = Astro.props;
+const t = useTranslations(locale);
+
+const barePath = currentPath.replace(/^\/fr(\/|$)/, "/");
+const enUrl = getLocalePath("en", barePath);
+const frUrl = getLocalePath("fr", barePath);
+---
+
+<nav
+  aria-label={t.langSwitcher.label}
+  class="flex items-center gap-1 text-sm font-medium"
+>
+  <a
+    href={enUrl}
+    aria-current={locale === "en" ? "page" : undefined}
+    class:list={[
+      "px-2 py-0.5 rounded transition-colors",
+      locale === "en"
+        ? "text-zinc-100 bg-zinc-700"
+        : "text-zinc-400 hover:text-zinc-200",
+    ]}
+  >
+    EN
+  </a>
+  <span class="text-zinc-600">/</span>
+  <a
+    href={frUrl}
+    aria-current={locale === "fr" ? "page" : undefined}
+    class:list={[
+      "px-2 py-0.5 rounded transition-colors",
+      locale === "fr"
+        ? "text-zinc-100 bg-zinc-700"
+        : "text-zinc-400 hover:text-zinc-200",
+    ]}
+  >
+    FR
+  </a>
+</nav>

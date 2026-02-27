@@ -11,33 +11,33 @@ import { getPublishedProjects } from "@/lib/content";
 import { getSlug, useTranslations } from "@/lib/i18n";
 
 export async function getStaticPaths() {
-  const projects = await getPublishedProjects("en");
+  const projects = await getPublishedProjects("fr");
   return projects.map((project) => ({
     params: { slug: getSlug(project.id) },
     props: project,
   }));
 }
 
-const t = useTranslations("en");
+const t = useTranslations("fr");
 const project = Astro.props;
 const { Content, headings } = await render(project);
 
-const allProjects = (await getPublishedProjects("en"))
+const allProjects = (await getPublishedProjects("fr"))
   .filter((p) => p.id !== project.id)
   .slice(0, 3);
 
 const siteUrl = Astro.site?.toString() || Astro.url.origin;
-const projectUrl = new URL(`/projects/${getSlug(project.id)}`, siteUrl).href;
+const projectUrl = new URL(`/fr/projects/${getSlug(project.id)}`, siteUrl).href;
 
 const structuredData = createBreadcrumbSchema([
-  { name: "Home", url: new URL("/", siteUrl).href },
-  { name: "Projects", url: new URL("/projects", siteUrl).href },
+  { name: "Accueil", url: new URL("/fr", siteUrl).href },
+  { name: "Projets", url: new URL("/fr/projects", siteUrl).href },
   { name: project.data.title, url: projectUrl },
 ]);
 ---
 
 <ContentLayout
-  title={`${project.data.title} - Hugo Charrade, Full-Stack Developer`}
+  title={`${project.data.title} - Hugo Charrade, Développeur Full-Stack`}
   description={project.data.description}
   articleDate={project.data.pubDate}
   articleModified={project.data.updateDate}
@@ -45,7 +45,9 @@ const structuredData = createBreadcrumbSchema([
 >
   <div class="max-w-6xl mx-auto">
     <header class="mb-8 space-y-3">
-      <p class="text-sm text-zinc-400">{formatDate(project.data.pubDate)}</p>
+      <p class="text-sm text-zinc-400">
+        {formatDate(project.data.pubDate, "fr-FR")}
+      </p>
       <h1 class="text-4xl md:text-5xl font-bold text-white text-balance">
         {project.data.title}
       </h1>
@@ -85,7 +87,7 @@ const structuredData = createBreadcrumbSchema([
           <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {allProjects.map((relatedProject) => (
               <li>
-                <ProjectCard project={relatedProject} basePath="/projects" />
+                <ProjectCard project={relatedProject} basePath="/fr/projects" />
               </li>
             ))}
           </ul>
@@ -95,7 +97,7 @@ const structuredData = createBreadcrumbSchema([
 
     <div class="mt-12 pt-8 border-t border-zinc-800">
       <a
-        href="/projects"
+        href="/fr/projects"
         class="inline-flex items-center gap-2 text-zinc-400 hover:text-zinc-200 transition-colors"
       >
         <svg

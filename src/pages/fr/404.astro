@@ -5,13 +5,13 @@ import Button from "@/components/Button.astro";
 import { createBreadcrumbSchema } from "@/lib/structuredData";
 import { useTranslations } from "@/lib/i18n";
 
-const t = useTranslations("en");
+const t = useTranslations("fr");
 const siteUrl = Astro.site?.toString() || Astro.url.origin;
 
 const structuredData = [
   createBreadcrumbSchema([
-    { name: "Home", url: new URL("/", siteUrl).href },
-    { name: "404", url: new URL("/404", siteUrl).href },
+    { name: "Accueil", url: new URL("/fr", siteUrl).href },
+    { name: "404", url: new URL("/fr/404", siteUrl).href },
   ]),
 ];
 ---
@@ -33,10 +33,11 @@ const structuredData = [
         <div
           class="flex flex-col sm:flex-row gap-4 justify-center items-center"
         >
-          <Button href="/" variant="primary">{t.notFound.backHome}</Button>
-          <Button href="/blog" variant="secondary">{t.notFound.readBlog}</Button
+          <Button href="/fr" variant="primary">{t.notFound.backHome}</Button>
+          <Button href="/fr/blog" variant="secondary"
+            >{t.notFound.readBlog}</Button
           >
-          <Button href="/projects" variant="secondary"
+          <Button href="/fr/projects" variant="secondary"
             >{t.notFound.viewProjects}</Button
           >
         </div>

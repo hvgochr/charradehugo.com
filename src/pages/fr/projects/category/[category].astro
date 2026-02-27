@@ -7,7 +7,7 @@ import { getPublishedProjects, getCategories } from "@/lib/content";
 import { useTranslations } from "@/lib/i18n";
 
 export async function getStaticPaths() {
-  const projects = await getPublishedProjects("en");
+  const projects = await getPublishedProjects("fr");
   const allCategories = getCategories(projects);
 
   return allCategories.map((category) => ({
@@ -21,14 +21,14 @@ export async function getStaticPaths() {
   }));
 }
 
-const t = useTranslations("en");
+const t = useTranslations("fr");
 const { category } = Astro.params;
 const { projects, allCategories } = Astro.props;
 ---
 
 <ContentLayout
-  title={`${t.projects.categoryPrefix}: ${category} - Hugo Charrade, Full-Stack Developer`}
-  description={`Projects about ${category} by Hugo Charrade, a Full-Stack Developer specializing in building fast and scalable web applications.`}
+  title={`${t.projects.categoryPrefix}: ${category} - Hugo Charrade, Développeur Full-Stack`}
+  description={`Projets sur ${category} par Hugo Charrade, développeur Full-Stack spécialisé dans la création d'applications web rapides et évolutives.`}
 >
   <H1>{t.projects.categoryPrefix}: {category}</H1>
 
@@ -36,14 +36,14 @@ const { projects, allCategories } = Astro.props;
     <CategoryFilter
       categories={allCategories}
       currentCategory={category}
-      basePath="/projects"
+      basePath="/fr/projects"
     />
 
     <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {
         projects.map((project) => (
           <li>
-            <ProjectCard project={project} basePath="/projects" />
+            <ProjectCard project={project} basePath="/fr/projects" />
           </li>
         ))
       }

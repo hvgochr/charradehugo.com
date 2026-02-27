@@ -8,7 +8,7 @@ import MeshGradientBackground from "@/components/MeshGradientBackground.astro";
 import { createWebSiteSchema, createPersonSchema } from "@/lib/structuredData";
 import { useTranslations } from "@/lib/i18n";
 
-const t = useTranslations("en");
+const t = useTranslations("fr");
 const siteUrl = Astro.site?.toString() || Astro.url.origin;
 
 const structuredData = [
@@ -47,16 +47,17 @@ const structuredData = [
           <CurrentStatus className="py-4" />
           <div class="mb-2 sm:mb-4 flex items-center justify-between">
             <div class="flex items-center gap-4">
-              <Button href="/contact">{t.home.cta}</Button>
+              <Button href="/fr/contact">{t.home.cta}</Button>
             </div>
 
-            <Navigation locale="en">
-              <Button href="/about" variant="secondary">{t.nav.about}</Button>
-              <Button href="/blog" variant="secondary">{t.nav.blog}</Button>
-              <Button href="/projects" variant="secondary"
+            <Navigation locale="fr">
+              <Button href="/fr/about" variant="secondary">{t.nav.about}</Button
+              >
+              <Button href="/fr/blog" variant="secondary">{t.nav.blog}</Button>
+              <Button href="/fr/projects" variant="secondary"
                 >{t.nav.projects}</Button
               >
-              <Button href="/contact" variant="secondary"
+              <Button href="/fr/contact" variant="secondary"
                 >{t.nav.contact}</Button
               >
             </Navigation>

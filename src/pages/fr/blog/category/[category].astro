@@ -7,7 +7,7 @@ import { getPublishedArticles, getCategories } from "@/lib/content";
 import { useTranslations } from "@/lib/i18n";
 
 export async function getStaticPaths() {
-  const articles = await getPublishedArticles("en");
+  const articles = await getPublishedArticles("fr");
   const allCategories = getCategories(articles);
 
   return allCategories.map((category) => ({
@@ -21,14 +21,14 @@ export async function getStaticPaths() {
   }));
 }
 
-const t = useTranslations("en");
+const t = useTranslations("fr");
 const { category } = Astro.params;
 const { articles, allCategories } = Astro.props;
 ---
 
 <ContentLayout
-  title={`${t.blog.categoryPrefix}: ${category} - Hugo Charrade, Full-Stack Developer`}
-  description={`Articles about ${category} by Hugo Charrade, a Full-Stack Developer specializing in building fast and scalable web applications.`}
+  title={`${t.blog.categoryPrefix}: ${category} - Hugo Charrade, Développeur Full-Stack`}
+  description={`Articles sur ${category} par Hugo Charrade, développeur Full-Stack spécialisé dans la création d'applications web rapides et évolutives.`}
 >
   <H1>{t.blog.categoryPrefix}: {category}</H1>
 
@@ -36,14 +36,14 @@ const { articles, allCategories } = Astro.props;
     <CategoryFilter
       categories={allCategories}
       currentCategory={category}
-      basePath="/blog"
+      basePath="/fr/blog"
     />
 
     <ul class="space-y-6">
       {
         articles.map((article) => (
           <li>
-            <ArticleCard article={article} basePath="/blog" />
+            <ArticleCard article={article} basePath="/fr/blog" />
           </li>
         ))
       }

@@ -8,14 +8,14 @@ import {
 } from "@/lib/structuredData";
 import { useTranslations } from "@/lib/i18n";
 
-const t = useTranslations("en");
+const t = useTranslations("fr");
 const siteUrl = Astro.site?.toString() || Astro.url.origin;
 
 const structuredData = [
   createPersonSchema(siteUrl),
   createBreadcrumbSchema([
-    { name: t.about.breadcrumbHome, url: new URL("/", siteUrl).href },
-    { name: t.about.breadcrumbAbout, url: new URL("/about", siteUrl).href },
+    { name: t.about.breadcrumbHome, url: new URL("/fr", siteUrl).href },
+    { name: t.about.breadcrumbAbout, url: new URL("/fr/about", siteUrl).href },
   ]),
 ];
 ---
@@ -51,7 +51,7 @@ const structuredData = [
             <span set:html={t.about.bio4} />
             {" "}
             <a
-              href="/contact"
+              href="/fr/contact"
               class="underline underline-offset-4 decoration-zinc-400 hover:text-zinc-50 hover:decoration-zinc-200"
             >
               {t.about.bio4Link}

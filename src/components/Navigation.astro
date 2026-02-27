@@ -1,12 +1,28 @@
 ---
+import LanguageSwitcher from "@/components/LanguageSwitcher.astro";
+import type { Locale } from "@/lib/i18n";
+import { useTranslations, getLocalePath } from "@/lib/i18n";
+
 interface Props {
   class?: string;
+  locale?: Locale;
 }
 
-const { class: className } = Astro.props;
+const { class: className, locale = "en" } = Astro.props;
+const t = useTranslations(locale);
+const currentPath = Astro.url.pathname;
+
+const navLinks = [
+  { href: getLocalePath(locale, "/about"), label: t.nav.about },
+  { href: getLocalePath(locale, "/blog"), label: t.nav.blog },
+  { href: getLocalePath(locale, "/projects"), label: t.nav.projects },
+  { href: getLocalePath(locale, "/contact"), label: t.nav.contact },
+];
 ---
 
-<div class:list={["flex items-center justify-center gap-12", className]}>
+<div class:list={["flex items-center justify-center gap-4", className]}>
+  <LanguageSwitcher locale={locale} currentPath={currentPath} />
+
   <div
     id="nav-desktop"
     class="hidden lg:flex gap-4 nav-content"
@@ -26,7 +42,7 @@ const { class: className } = Astro.props;
       class="fixed bottom-20 sm:bottom-32 left-4 sm:left-8 flex flex-col items-start justify-center gap-4"
     >
       <a
-        href="/about"
+        href={navLinks[0].href}
         class="mobile-link w-fit flex items-center justify-center gap-3 text-lg sm:text-2xl text-zinc-100 cursor-pointer"
       >
         <svg
@@ -45,11 +61,11 @@ const { class: className } = Astro.props;
             d="M7.5 11.11c0 1.368 1.319 2.804 2.529 3.833c.823.7 1.235 1.05 1.971 1.05s1.148-.35 1.971-1.05c1.21-1.03 2.529-2.465 2.529-3.834c0-2.677-2.475-3.676-4.5-1.608c-2.025-2.068-4.5-1.069-4.5 1.608"
           ></path>
         </svg>
-        About
+        {navLinks[0].label}
       </a>
 
       <a
-        href="/blog"
+        href={navLinks[1].href}
         class="mobile-link w-fit flex items-center justify-center gap-3 text-lg sm:text-2xl text-zinc-100 cursor-pointer"
       >
         <svg
@@ -69,11 +85,11 @@ const { class: className } = Astro.props;
             d="M16.415 17.975a4 4 0 0 1-1.068 1.677c-.731.685-1.859.987-4.114 1.591s-3.383.907-4.358.679a4 4 0 0 1-2.011-1.161c-.685-.731-.988-1.859-1.592-4.114l-.517-1.932c-.605-2.255-.907-3.383-.68-4.358a4 4 0 0 1 1.162-2.011c.731-.685 1.859-.987 4.114-1.592c.426-.114.813-.218 1.165-.309l-.244.906l-.517 1.932c-.605 2.255-.907 3.382-.68 4.358a4 4 0 0 0 1.162 2.011c.731.685 1.859.987 4.114 1.592c2.032.544 3.149.843 4.064.73"
             opacity=".5"></path>
         </svg>
-        Blog
+        {navLinks[1].label}
       </a>
 
       <a
-        href="/projects"
+        href={navLinks[2].href}
         class="mobile-link w-fit flex items-center justify-center gap-3 text-lg sm:text-2xl text-zinc-100 cursor-pointer"
       >
         <svg
@@ -93,11 +109,11 @@ const { class: className } = Astro.props;
             d="M3.5762 12.4846C3.68271 12.3586 3.80034 12.241 3.92792 12.1332C4.79888 11.3975 6.20667 11.3975 9.02227 11.3975H15.9777C18.7933 11.3975 20.2011 11.3975 21.0721 12.1332C21.2 12.2413 21.3179 12.3592 21.4247 12.4857V9.75579C21.4247 8.84687 21.4247 8.09279 21.3394 7.49156C21.2494 6.85704 21.0531 6.29458 20.5839 5.83245C20.5074 5.75707 20.4266 5.68552 20.342 5.61807C19.8302 5.21023 19.2167 5.04345 18.5222 4.96608C17.8531 4.89155 17.0102 4.89157 15.9769 4.89158L15.6242 4.89158C14.6421 4.89158 14.29 4.88587 13.9711 4.80533C13.7837 4.75802 13.604 4.69195 13.4352 4.60878C13.151 4.46867 12.9033 4.25762 12.2077 3.64132L11.7336 3.22128C11.5345 3.04489 11.3987 2.9245 11.2531 2.81755C10.6284 2.35879 9.86779 2.08132 9.07145 2.01534C8.88602 1.99998 8.6968 1.99999 8.41356 2.00002L8.29714 2.00001C7.65647 1.9999 7.23365 1.99983 6.86652 2.0612C5.26167 2.32947 3.96392 3.45143 3.64782 4.93575C3.57591 5.27344 3.57602 5.66035 3.57619 6.21853L3.5762 12.4846Z"
             fill="currentColor"></path>
         </svg>
-        Projects
+        {navLinks[2].label}
       </a>
 
       <a
-        href="/contact"
+        href={navLinks[3].href}
         class="mobile-link w-fit flex items-center justify-center gap-3 text-lg sm:text-2xl text-zinc-100 cursor-pointer"
       >
         <svg
@@ -121,13 +137,13 @@ const { class: className } = Astro.props;
             d="M16.9576 3.02099C16.156 3 15.2437 3 14.2 3H9.8C5.65164 3 3.57746 3 2.28873 4.31802C1 5.63604 1 7.75736 1 12C1 16.2426 1 18.364 2.28873 19.682C3.57746 21 5.65164 21 9.8 21H14.2C18.3484 21 20.4225 21 21.7113 19.682C23 18.364 23 16.2426 23 12C23 10.9326 23 9.99953 22.9795 9.1797C22.3821 9.47943 21.7103 9.64773 21 9.64773C18.5147 9.64773 16.5 7.58722 16.5 5.04545C16.5 4.31904 16.6646 3.63193 16.9576 3.02099Z"
             fill="currentColor"></path>
         </svg>
-        Contact
+        {navLinks[3].label}
       </a>
 
       <button
         type="button"
         id="nav-close"
-        aria-label="Close navigation menu"
+        aria-label={t.nav.closeMenu}
         class="mobile-link w-fit flex items-center justify-center gap-3 text-lg sm:text-2xl text-zinc-100 cursor-pointer"
       >
         <svg
@@ -146,7 +162,7 @@ const { class: className } = Astro.props;
             d="M8.97 8.97a.75.75 0 0 1 1.06 0L12 10.94l1.97-1.97a.75.75 0 1 1 1.06 1.06L13.06 12l1.97 1.97a.75.75 0 0 1-1.06 1.06L12 13.06l-1.97 1.97a.75.75 0 0 1-1.06-1.06L10.94 12l-1.97-1.97a.75.75 0 0 1 0-1.06"
           ></path>
         </svg>
-        Close
+        {t.nav.close}
       </button>
     </div>
   </dialog>
@@ -156,7 +172,7 @@ const { class: className } = Astro.props;
     id="nav-toggle"
     aria-expanded="false"
     aria-controls="nav-mobile"
-    aria-label="Open navigation menu"
+    aria-label={t.nav.openMenu}
     class="h-fit text-white cursor-pointer hover:outline-2 focus-visible:outline-2 outline-offset-1 outline-zinc-100/20 focus-visible:outline-white rounded-lg"
   >
     <svg

@@ -6,8 +6,8 @@ import ProjectCard from "@/components/ProjectCard.astro";
 import { getPublishedProjects, getCategories } from "@/lib/content";
 import { useTranslations } from "@/lib/i18n";
 
-const t = useTranslations("en");
-const projects = await getPublishedProjects("en");
+const t = useTranslations("fr");
+const projects = await getPublishedProjects("fr");
 const categories = getCategories(projects);
 ---
 
@@ -18,13 +18,13 @@ const categories = getCategories(projects);
   <H1>{t.projects.h1}</H1>
 
   <div class="space-y-4 sm:space-y-12 mt-4">
-    <CategoryFilter categories={categories} basePath="/projects" />
+    <CategoryFilter categories={categories} basePath="/fr/projects" />
 
     <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {
         projects.map((project) => (
           <li>
-            <ProjectCard project={project} basePath="/projects" />
+            <ProjectCard project={project} basePath="/fr/projects" />
           </li>
         ))
       }

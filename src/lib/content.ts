@@ -1,37 +1,30 @@
 import { getCollection } from "astro:content";
 import type { CollectionEntry } from "astro:content";
-
-let articlesCache: CollectionEntry<"articles">[] | null = null;
-let projectsCache: CollectionEntry<"projects">[] | null = null;
+import type { Locale } from "./i18n";
 
 /**
- * Returns all non-draft articles sorted by publication date (newest first).
- * Result is cached after the first call within a build.
+ * Returns published articles for the given locale, sorted newest first.
+ * Entry ids are expected to be prefixed with the locale (e.g. "en/my-post").
  */
-export async function getPublishedArticles(): Promise<
-  CollectionEntry<"articles">[]
-> {
-  if (!articlesCache) {
-    articlesCache = (await getCollection("articles"))
-      .filter((article) => !article.data.isDraft)
-      .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
-  }
-  return articlesCache;
+export async function getPublishedArticles(
+  locale: Locale = "en"
+): Promise<CollectionEntry<"articles">[]> {
+  const all = await getCollection("articles");
+  return all
+    .filter((a) => !a.data.isDraft && a.id.startsWith(`${locale}/`))
+    .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 }
 
 /**
- * Returns all non-draft projects sorted by publication date (newest first).
- * Result is cached after the first call within a build.
+ * Returns published projects for the given locale, sorted newest first.
  */
-export async function getPublishedProjects(): Promise<
-  CollectionEntry<"projects">[]
-> {
-  if (!projectsCache) {
-    projectsCache = (await getCollection("projects"))
-      .filter((project) => !project.data.isDraft)
-      .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
-  }
-  return projectsCache;
+export async function getPublishedProjects(
+  locale: Locale = "en"
+): Promise<CollectionEntry<"projects">[]> {
+  const all = await getCollection("projects");
+  return all
+    .filter((p) => !p.data.isDraft && p.id.startsWith(`${locale}/`))
+    .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 }
 
 /**

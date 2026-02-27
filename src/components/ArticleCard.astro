@@ -1,16 +1,19 @@
 ---
 import { Image } from "astro:assets";
 import { formatDate } from "@/lib/utils";
+import { getSlug } from "@/lib/i18n";
 import type { CollectionEntry } from "astro:content";
 
 interface Props {
   article: CollectionEntry<"articles">;
+  basePath?: string;
 }
 
-const { article } = Astro.props;
+const { article, basePath = "/blog" } = Astro.props;
+const slug = getSlug(article.id);
 ---
 
-<a href={`/blog/${article.id}`} class="flex flex-col sm:flex-row gap-4 group">
+<a href={`${basePath}/${slug}`} class="flex flex-col sm:flex-row gap-4 group">
   <div
     class="sm:w-48 sm:h-32 w-full h-48 shrink-0 overflow-hidden rounded-md bg-zinc-900"
   >
