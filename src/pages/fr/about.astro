@@ -12,7 +12,7 @@ const t = useTranslations("fr");
 const siteUrl = Astro.site?.toString() || Astro.url.origin;
 
 const structuredData = [
-  createPersonSchema(siteUrl),
+  createPersonSchema(siteUrl, "fr"),
   createBreadcrumbSchema([
     { name: t.about.breadcrumbHome, url: new URL("/fr", siteUrl).href },
     { name: t.about.breadcrumbAbout, url: new URL("/fr/about", siteUrl).href },

@@ -1,4 +1,5 @@
 import type { CollectionEntry } from "astro:content";
+import type { Locale } from "@/lib/i18n";
 
 export interface Person extends Record<string, unknown> {
   "@context": "https://schema.org";
@@ -68,16 +69,22 @@ export type StructuredDataSchema =
  * @param siteUrl - The base URL of the site
  * @returns Person schema object for structured data
  */
-export function createPersonSchema(siteUrl: string): Person {
+export function createPersonSchema(
+  siteUrl: string,
+  locale: Locale = "en"
+): Person {
   return {
     "@context": "https://schema.org",
     "@type": "Person",
     name: "Hugo Charrade",
     url: new URL("/", siteUrl).href,
     image: new URL("/og-image.png", siteUrl).href,
-    jobTitle: "Full-Stack Developer",
+    jobTitle:
+      locale === "fr" ? "Développeur Full-Stack" : "Full-Stack Developer",
     description:
-      "Full-stack developer building fast and scalable web applications with Symfony, Laravel and modern JavaScript frameworks.",
+      locale === "fr"
+        ? "Développeur full-stack spécialisé dans la création d'applications web rapides et évolutives avec Symfony, Laravel et les frameworks JavaScript modernes."
+        : "Full-stack developer building fast and scalable web applications with Symfony, Laravel and modern JavaScript frameworks.",
     sameAs: [
       "https://github.com/hvgochr",
       "https://twitter.com/hvgochr",
@@ -107,15 +114,20 @@ export function createOrganizationSchema(siteUrl: string): Organization {
  * @param siteUrl - The base URL of the site
  * @returns WebSite schema object for structured data
  */
-export function createWebSiteSchema(siteUrl: string): WebSite {
+export function createWebSiteSchema(
+  siteUrl: string,
+  locale: Locale = "en"
+): WebSite {
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: "Hugo Charrade Portfolio",
     url: new URL("/", siteUrl).href,
     description:
-      "Full-stack developer building fast and scalable web applications with Symfony, Laravel and modern JavaScript frameworks. APIs, Docker, automation, and production-ready systems.",
-    author: createPersonSchema(siteUrl),
+      locale === "fr"
+        ? "Développeur full-stack spécialisé dans la création d'applications web rapides et évolutives avec Symfony, Laravel et les frameworks JavaScript modernes. APIs, Docker, automatisation et systèmes prêts pour la production."
+        : "Full-stack developer building fast and scalable web applications with Symfony, Laravel and modern JavaScript frameworks. APIs, Docker, automation, and production-ready systems.",
+    author: createPersonSchema(siteUrl, locale),
   };
 }
 
@@ -130,7 +142,8 @@ export function createWebSiteSchema(siteUrl: string): WebSite {
 export function createArticleSchema(
   article: CollectionEntry<"articles">,
   siteUrl: string,
-  articleUrl: string
+  articleUrl: string,
+  locale: Locale = "en"
 ): Article {
   const schema: Article = {
     "@context": "https://schema.org",
@@ -142,7 +155,7 @@ export function createArticleSchema(
         ? article.data.cover
         : new URL("/og-image.png", siteUrl).href,
     datePublished: article.data.pubDate.toISOString(),
-    author: createPersonSchema(siteUrl),
+    author: createPersonSchema(siteUrl, locale),
     publisher: createOrganizationSchema(siteUrl),
     url: articleUrl,
   };

@@ -12,8 +12,8 @@ const t = useTranslations("fr");
 const siteUrl = Astro.site?.toString() || Astro.url.origin;
 
 const structuredData = [
-  createWebSiteSchema(siteUrl),
-  createPersonSchema(siteUrl),
+  createWebSiteSchema(siteUrl, "fr"),
+  createPersonSchema(siteUrl, "fr"),
 ];
 ---
 

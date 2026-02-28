@@ -1,7 +1,7 @@
 ---
 import { Image } from "astro:assets";
 import { formatDate } from "@/lib/utils";
-import { getSlug } from "@/lib/i18n";
+import { getSlug, getLocaleFromUrl } from "@/lib/i18n";
 import type { CollectionEntry } from "astro:content";
 
 interface Props {
@@ -11,6 +11,7 @@ interface Props {
 
 const { article, basePath = "/blog" } = Astro.props;
 const slug = getSlug(article.id);
+const dateLocale = getLocaleFromUrl(Astro.url) === "fr" ? "fr-FR" : "en-US";
 ---
 
 <a href={`${basePath}/${slug}`} class="flex flex-col sm:flex-row gap-4 group">
@@ -35,7 +36,7 @@ const slug = getSlug(article.id);
       {article.data.description}
     </p>
     <p class="text-sm text-zinc-400">
-      {formatDate(article.data.pubDate)}
+      {formatDate(article.data.pubDate, dateLocale)}
     </p>
   </div>
 </a>
