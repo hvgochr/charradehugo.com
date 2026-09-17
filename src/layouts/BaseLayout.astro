@@ -1,7 +1,6 @@
 ---
 import BaseHead from "@/components/BaseHead.astro";
 import type { StructuredDataSchema } from "@/lib/structuredData";
-import Analytics from "@vercel/analytics/astro";
 
 interface Props {
   title: string;
@@ -36,7 +35,6 @@ const {
   </head>
   <body class="font-sans min-h-dvh bg-zinc-900">
     <slot />
-    <Analytics />
   </body>
 </html>
 
