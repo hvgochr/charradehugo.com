@@ -16,7 +16,6 @@ Personal portfolio built with [Astro](https://astro.build), deployed at [charrad
 - **Tailwind CSS 4** — styling
 - **MDX** — blog & project content
 - **@paper-design/shaders** — shader-based visual effects
-- **Vercel Analytics** — analytics
 
 ## Project Structure
 
