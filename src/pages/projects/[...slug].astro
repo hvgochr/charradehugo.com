@@ -7,6 +7,7 @@ import ProjectLinks from "@/components/ProjectLinks.astro";
 import { render } from "astro:content";
 import { Image } from "astro:assets";
 import { formatDate } from "@/lib/utils";
+import { getAbsoluteImageUrl } from "@/lib/images";
 import { createBreadcrumbSchema } from "@/lib/structuredData";
 import { getPublishedProjects } from "@/lib/content";
 import { getSlug, useTranslations } from "@/lib/i18n";
@@ -29,6 +30,7 @@ const allProjects = (await getPublishedProjects("en"))
 
 const siteUrl = Astro.site?.toString() || Astro.url.origin;
 const projectUrl = new URL(`/projects/${getSlug(project.id)}`, siteUrl).href;
+const coverImageUrl = await getAbsoluteImageUrl(project.data.cover, siteUrl);
 
 const structuredData = createBreadcrumbSchema([
   { name: "Home", url: new URL("/", siteUrl).href },
@@ -40,6 +42,7 @@ const structuredData = createBreadcrumbSchema([
 <ContentLayout
   title={`${project.data.title} - Hugo Charrade, Full-Stack Developer`}
   description={project.data.description}
+  ogImage={coverImageUrl}
   articleDate={project.data.pubDate}
   articleModified={project.data.updateDate}
   structuredData={structuredData}

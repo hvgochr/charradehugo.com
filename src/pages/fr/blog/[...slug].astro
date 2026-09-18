@@ -6,6 +6,7 @@ import ArticleCard from "@/components/ArticleCard.astro";
 import { render } from "astro:content";
 import { Image } from "astro:assets";
 import { formatDate } from "@/lib/utils";
+import { getAbsoluteImageUrl } from "@/lib/images";
 import { getPublishedArticles } from "@/lib/content";
 import { getSlug, useTranslations } from "@/lib/i18n";
 import {
@@ -31,9 +32,10 @@ const allArticles = (await getPublishedArticles("fr"))
 
 const siteUrl = Astro.site?.toString() || Astro.url.origin;
 const articleUrl = new URL(`/fr/blog/${getSlug(article.id)}`, siteUrl).href;
+const coverImageUrl = await getAbsoluteImageUrl(article.data.cover, siteUrl);
 
 const structuredData = [
-  createArticleSchema(article, siteUrl, articleUrl, "fr"),
+  createArticleSchema(article, siteUrl, articleUrl, coverImageUrl, "fr"),
   createBreadcrumbSchema([
     { name: "Accueil", url: new URL("/fr", siteUrl).href },
     { name: "Blog", url: new URL("/fr/blog", siteUrl).href },
@@ -45,6 +47,7 @@ const structuredData = [
 <ContentLayout
   title={`${article.data.title} - Hugo Charrade, Développeur Full-Stack`}
   description={article.data.description}
+  ogImage={coverImageUrl}
   articleDate={article.data.pubDate}
   articleModified={article.data.updateDate}
   structuredData={structuredData}
