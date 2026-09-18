@@ -1,4 +1,6 @@
 ---
+import { getLocaleFromUrl, useTranslations } from "@/lib/i18n";
+
 interface Props {
   categories: string[];
   currentCategory?: string;
@@ -6,6 +8,7 @@ interface Props {
 }
 
 const { categories, currentCategory, basePath } = Astro.props;
+const t = useTranslations(getLocaleFromUrl(Astro.url));
 ---
 
 <div class="w-full overflow-x-auto scrollbar-hidden py-2">
@@ -20,7 +23,7 @@ const { categories, currentCategory, basePath } = Astro.props;
             : "text-zinc-400 hover:text-zinc-200",
         ]}
       >
-        All
+        {t.categoryFilter.all}
       </a>
     </li>
     {

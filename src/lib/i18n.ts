@@ -10,8 +10,10 @@ const translations = {
       close: "Close",
       openMenu: "Open navigation menu",
       closeMenu: "Close navigation menu",
+      menuLabel: "Navigation menu",
     },
     footer: {
+      home: "Home",
       about: "About",
       blog: "Blog",
       projects: "Projects",
@@ -93,6 +95,9 @@ const translations = {
     tableOfContents: {
       onThisPage: "On this page",
     },
+    categoryFilter: {
+      all: "All",
+    },
   },
   fr: {
     nav: {
@@ -103,8 +108,10 @@ const translations = {
       close: "Fermer",
       openMenu: "Ouvrir le menu de navigation",
       closeMenu: "Fermer le menu de navigation",
+      menuLabel: "Menu de navigation",
     },
     footer: {
+      home: "Accueil",
       about: "À propos",
       blog: "Blog",
       projects: "Projets",
@@ -185,6 +192,9 @@ const translations = {
     },
     tableOfContents: {
       onThisPage: "Sur cette page",
+    },
+    categoryFilter: {
+      all: "Tous",
     },
   },
 } as const;
