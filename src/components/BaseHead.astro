@@ -4,7 +4,7 @@ import { Font } from "astro:assets";
 import { ClientRouter } from "astro:transitions";
 import StructuredData from "./StructuredData.astro";
 import type { StructuredDataSchema } from "@/lib/structuredData";
-import { getLocaleFromUrl } from "@/lib/i18n";
+import { getLocaleFromUrl, getLocalePath } from "@/lib/i18n";
 import { getLocalizedPaths } from "@/lib/localizedRoutes";
 
 interface Props {
@@ -59,7 +59,7 @@ const frURL = localizedPaths.fr
   rel="alternate"
   type="application/rss+xml"
   title={`${title} RSS Feed`}
-  href="/rss.xml"
+  href={getLocalePath(locale, "/rss.xml")}
 />
 <link rel="author" href={Astro.site || Astro.url.origin} />
 <meta name="generator" content={Astro.generator} />
