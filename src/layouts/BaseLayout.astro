@@ -1,5 +1,6 @@
 ---
 import BaseHead from "@/components/BaseHead.astro";
+import { getLocaleFromUrl } from "@/lib/i18n";
 import type { StructuredDataSchema } from "@/lib/structuredData";
 
 interface Props {
@@ -19,10 +20,12 @@ const {
   articleModified,
   structuredData,
 } = Astro.props;
+
+const locale = getLocaleFromUrl(Astro.url);
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={locale}>
   <head>
     <BaseHead
       title={title}
