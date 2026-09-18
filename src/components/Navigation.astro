@@ -34,8 +34,7 @@ const navLinks = [
   <dialog
     id="nav-mobile"
     aria-label={t.nav.menuLabel}
-    aria-modal="true"
-    class="lg:hidden absolute z-50 w-full h-full flex flex-col gap-4 top-0 bg-zinc-900/20 backdrop-blur-md nav-dialog"
+    class="lg:hidden fixed inset-0 z-50 w-full h-full max-w-none max-h-none m-0 border-0 flex-col gap-4 bg-zinc-900/20 backdrop-blur-md nav-dialog"
     data-state="closed"
   >
     <div
@@ -208,20 +207,26 @@ const navLinks = [
     animation: fadeOut 0.5s ease-in-out;
   }
 
-  .nav-dialog {
+  .nav-dialog:not([open]) {
     display: none;
-    animation: fadeIn 0.25s ease-in-out;
   }
 
   @media (max-width: 1023px) {
-    .nav-dialog[data-state="open"],
-    .nav-dialog[data-state="closing"] {
+    .nav-dialog[open] {
       display: flex;
     }
   }
 
+  .nav-dialog[data-state="open"] {
+    animation: fadeIn 0.25s ease-in-out;
+  }
+
   .nav-dialog[data-state="closing"] {
     animation: fadeOut 0.25s ease-in-out;
+  }
+
+  .nav-dialog::backdrop {
+    background: transparent;
   }
 
   .mobile-link {
@@ -305,6 +310,28 @@ const navLinks = [
       filter: blur(20px);
     }
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nav-content,
+    .nav-dialog,
+    .mobile-link {
+      animation: none !important;
+      filter: none !important;
+    }
+
+    .mobile-link {
+      opacity: 1;
+      transform: none;
+    }
+
+    .nav-icon {
+      transition: none;
+    }
+
+    .nav-icon[data-state="open"] {
+      transform: none;
+    }
+  }
 </style>
 
 <script>
@@ -314,47 +341,95 @@ const navLinks = [
     const desktop = document.getElementById("nav-desktop");
     const mobile = document.getElementById("nav-mobile") as HTMLDialogElement;
     const icon = toggle?.querySelector(".nav-icon");
+    const mobileViewport = window.matchMedia("(max-width: 1023px)");
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const controller = new AbortController();
+    const { signal } = controller;
 
     let isOpen = false;
+    let closeTimeout: number | undefined;
 
     function openNav() {
-      isOpen = true;
-      toggle?.setAttribute("aria-expanded", "true");
-      desktop?.setAttribute("data-state", "open");
-      mobile?.setAttribute("data-state", "open");
-      icon?.setAttribute("data-state", "open");
+      if (!toggle || !desktop || !mobile || !icon) return;
 
-      const firstLink = mobile?.querySelector<HTMLElement>("a, button");
+      if (closeTimeout) window.clearTimeout(closeTimeout);
+      isOpen = true;
+      toggle.setAttribute("aria-expanded", "true");
+      icon.setAttribute("data-state", "open");
+
+      if (!mobileViewport.matches) {
+        desktop.setAttribute("data-state", "open");
+        return;
+      }
+
+      if (!mobile.open) mobile.showModal();
+      mobile.setAttribute("data-state", "open");
+
+      const firstLink = mobile.querySelector<HTMLElement>("a, button");
       firstLink?.focus();
     }
 
     function closeNav() {
+      if (!toggle || !desktop || !mobile || !icon) return;
+      if (!isOpen && !mobile.open) return;
+
+      if (closeTimeout) window.clearTimeout(closeTimeout);
       isOpen = false;
-      toggle?.setAttribute("aria-expanded", "false");
-      desktop?.setAttribute("data-state", "closing");
-      mobile?.setAttribute("data-state", "closing");
-      icon?.setAttribute("data-state", "closed");
+      toggle.setAttribute("aria-expanded", "false");
+      icon.setAttribute("data-state", "closed");
 
-      setTimeout(() => {
-        desktop?.setAttribute("data-state", "closed");
-        mobile?.setAttribute("data-state", "closed");
-      }, 250);
+      if (desktop.dataset.state === "open") {
+        desktop.setAttribute("data-state", "closing");
+      }
+      if (mobile.open) mobile.setAttribute("data-state", "closing");
 
-      toggle?.focus();
+      const finishClosing = () => {
+        desktop.setAttribute("data-state", "closed");
+        mobile.setAttribute("data-state", "closed");
+        if (mobile.open) mobile.close();
+        toggle.focus();
+      };
+
+      const duration = reducedMotion.matches ? 0 : mobile.open ? 250 : 500;
+      if (duration === 0) finishClosing();
+      else closeTimeout = window.setTimeout(finishClosing, duration);
     }
 
-    toggle?.addEventListener("click", () => {
-      if (isOpen) closeNav();
-      else openNav();
-    });
+    toggle?.addEventListener(
+      "click",
+      () => {
+        if (isOpen) closeNav();
+        else openNav();
+      },
+      { signal }
+    );
 
-    close?.addEventListener("click", closeNav);
-    mobile?.addEventListener("click", (e) => {
-      if (e.target === mobile) closeNav();
-    });
+    close?.addEventListener("click", closeNav, { signal });
+    mobile?.addEventListener(
+      "click",
+      (event) => {
+        if (event.target === mobile) closeNav();
+      },
+      { signal }
+    );
+    mobile?.addEventListener(
+      "cancel",
+      (event) => {
+        event.preventDefault();
+        closeNav();
+      },
+      { signal }
+    );
+    mobileViewport.addEventListener("change", closeNav, { signal });
 
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && isOpen) closeNav();
-    });
+    document.addEventListener(
+      "astro:before-swap",
+      () => {
+        if (closeTimeout) window.clearTimeout(closeTimeout);
+        if (mobile?.open) mobile.close();
+        controller.abort();
+      },
+      { once: true }
+    );
   });
 </script>
