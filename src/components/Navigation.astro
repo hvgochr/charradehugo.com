@@ -420,6 +420,13 @@ const navLinks = [
       },
       { signal }
     );
+    document.addEventListener(
+      "keydown",
+      (event) => {
+        if (event.key === "Escape" && isOpen && !mobile?.open) closeNav();
+      },
+      { signal }
+    );
     mobileViewport.addEventListener("change", closeNav, { signal });
 
     document.addEventListener(
