@@ -7,7 +7,7 @@ import { render } from "astro:content";
 import { Image } from "astro:assets";
 import { formatDate } from "@/lib/utils";
 import { getAbsoluteImageUrl } from "@/lib/images";
-import { getPublishedArticles } from "@/lib/content";
+import { getPublishedArticles, getRelatedArticles } from "@/lib/content";
 import { getSlug, useTranslations } from "@/lib/i18n";
 import {
   createArticleSchema,
@@ -26,9 +26,7 @@ const t = useTranslations("en");
 const article = Astro.props;
 const { Content, headings } = await render(article);
 
-const allArticles = (await getPublishedArticles("en"))
-  .filter((a) => a.id !== article.id)
-  .slice(0, 3);
+const relatedArticles = await getRelatedArticles(article, "en");
 
 const siteUrl = Astro.site?.toString() || Astro.url.origin;
 const articleUrl = new URL(`/blog/${getSlug(article.id)}`, siteUrl).href;
@@ -88,13 +86,13 @@ const structuredData = [
     </div>
 
     {
-      allArticles.length > 0 && (
+      relatedArticles.length > 0 && (
         <div class="mt-16 pt-12 border-t border-zinc-800">
           <h2 class="text-2xl font-semibold text-zinc-200 mb-6">
-            {t.blog.recentArticles}
+            {t.blog.relatedArticles}
           </h2>
           <ul class="space-y-6">
-            {allArticles.map((relatedArticle) => (
+            {relatedArticles.map((relatedArticle) => (
               <li>
                 <ArticleCard article={relatedArticle} basePath="/blog" />
               </li>

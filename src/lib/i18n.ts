@@ -73,7 +73,7 @@ const translations = {
       metaDescription:
         "Read the latest articles and insights from Hugo Charrade, a Full-Stack Developer specializing in building fast and scalable web applications.",
       h1: "Blog",
-      recentArticles: "Recent Articles",
+      relatedArticles: "Related Articles",
       backToBlog: "Back to Blog",
       categoryPrefix: "Blog",
     },
@@ -171,7 +171,7 @@ const translations = {
       metaDescription:
         "Lisez les derniers articles et réflexions de Hugo Charrade, développeur Full-Stack spécialisé dans la création d'applications web rapides et évolutives.",
       h1: "Blog",
-      recentArticles: "Articles récents",
+      relatedArticles: "Articles similaires",
       backToBlog: "Retour au blog",
       categoryPrefix: "Blog",
     },
