@@ -1,6 +1,7 @@
 ---
 import type { Locale } from "@/lib/i18n";
 import { getLocalePath, useTranslations } from "@/lib/i18n";
+import { getLocalizedPaths } from "@/lib/localizedRoutes";
 
 interface Props {
   locale: Locale;
@@ -10,9 +11,9 @@ interface Props {
 const { locale, currentPath } = Astro.props;
 const t = useTranslations(locale);
 
-const barePath = currentPath.replace(/^\/fr(\/|$)/, "/");
-const enUrl = getLocalePath("en", barePath);
-const frUrl = getLocalePath("fr", barePath);
+const localizedPaths = await getLocalizedPaths(currentPath);
+const enUrl = localizedPaths.en ?? getLocalePath("en");
+const frUrl = localizedPaths.fr ?? getLocalePath("fr");
 ---
 
 <nav
