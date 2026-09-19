@@ -1,0 +1,794 @@
+---
+title: "GameSentry"
+description: "Une application Laravel et React qui suit les parties de League of Legends et Teamfight Tactics pour publier des résumés et des commentaires générés par IA sur Discord."
+cover: "../../../../public/og-image.png"
+coverAlt: "Visuel de présentation du portfolio de Hugo Charrade"
+categories: ["Laravel", "React", "Docker"]
+links:
+  - label: "Voir le projet"
+    url: "https://gamesentry.charradehugo.com"
+  - label: "Code source"
+    url: "https://github.com/hvgochr/gamesentry"
+pubDate: 2026-09-17
+isDraft: false
+---
+
+## Le projet
+
+GameSentry suit les parties de joueurs de **League of Legends** et de **Teamfight Tactics**, puis publie un résumé dans un salon Discord<sup>[\[1\]](#ref-discord)</sup>. Le message rassemble les statistiques de la partie et un court commentaire humoristique en français, généré à partir de ces données.
+
+J'ai développé ce projet personnel autour d'un usage simple: retrouver les résultats des joueurs directement dans l'espace où l'on échange déjà avec eux. Derrière ce fonctionnement, le principal travail concerne la coordination de plusieurs services externes et la gestion des traitements en arrière-plan.
+
+## Ce que permet l'application
+
+Depuis l'interface web, un utilisateur peut associer un serveur Discord<sup>[\[1\]](#ref-discord)</sup>, sélectionner le salon de destination et ajouter des joueurs à suivre avec leur Riot ID<sup>[\[7\]](#ref-riot)</sup>. Chaque joueur est également associé à un utilisateur Discord<sup>[\[1\]](#ref-discord)</sup> pour permettre sa mention dans les notifications.
+
+Les résumés s'adaptent au jeu: résultat et statistiques individuelles pour League of Legends, placement et composition pour Teamfight Tactics. Le tableau de bord permet de consulter les notifications récentes et l'utilisation du compte.
+
+Le projet intègre également des offres Free et Pro avec des limites de serveurs, de joueurs et de générations quotidiennes. La gestion des abonnements s'appuie sur Stripe<sup>[\[2\]](#ref-stripe)</sup> et Laravel Cashier<sup>[\[3\]](#ref-cashier)</sup>. Une interface d'administration donne accès aux états opérationnels et à la relance des traitements en échec.
+
+## Pourquoi Laravel ?
+
+Le backend utilise **Laravel 13<sup>[\[4\]](#ref-laravel)</sup> avec PHP 8.4<sup>[\[6\]](#ref-php)</sup>**. Le besoin central de GameSentry est d'exécuter régulièrement des traitements qui dépendent de plusieurs services externes. Laravel<sup>[\[4\]](#ref-laravel)</sup> rassemble les briques nécessaires dans un même environnement: scheduler, queues, client HTTP, cache, verrous et accès à la base avec Eloquent<sup>[\[5\]](#ref-eloquent)</sup>.
+
+Le **scheduler** sélectionne les joueurs dont le suivi est arrivé à échéance et programme le travail. Les **queues** exécutent les appels à l'API Riot<sup>[\[7\]](#ref-riot)</sup>, la génération du commentaire et l'envoi Discord<sup>[\[1\]](#ref-discord)</sup> en arrière-plan, avec des tentatives, des délais de reprise et des timeouts. Le tableau de bord reste indépendant de ces traitements, même si certaines opérations de configuration, comme la résolution d'un Riot ID<sup>[\[6\]](#ref-riot)</sup>, restent synchrones.
+
+Cette organisation permet de conserver les règles métier dans une seule application PHP<sup>[\[5\]](#ref-php)</sup>, tout en séparant les processus web, worker et scheduler en production. Elle évite d'ajouter un service indépendant pour chaque intégration.
+
+### Fortify pour l'authentification
+
+**Laravel Fortify<sup>[\[8\]](#ref-fortify)</sup>** fournit les mécanismes d'authentification utilisés par l'application: inscription, connexion, récupération du mot de passe, vérification de l'adresse e-mail, double authentification et passkeys. Les écrans sont réalisés avec React<sup>[\[9\]](#ref-react)</sup> et Inertia<sup>[\[10\]](#ref-inertia)</sup> pendant que Fortify<sup>[\[8\]](#ref-fortify)</sup> porte les parcours côté serveur.
+
+S'appuyer sur cette bibliothèque réduit le code d'authentification spécifique à maintenir. Les autorisations métier restent toutefois propres à GameSentry: Fortify<sup>[\[8\]](#ref-fortify)</sup> ne décide pas quels serveurs Discord<sup>[\[1\]](#ref-discord)</sup> ou joueurs un utilisateur peut gérer.
+
+### Cashier pour les abonnements
+
+**Laravel Cashier<sup>[\[3\]](#ref-cashier)</sup>** relie les utilisateurs et leurs abonnements Stripe<sup>[\[2\]](#ref-stripe)</sup> au modèle Laravel<sup>[\[4\]](#ref-laravel)</sup>. Il est utilisé pour ouvrir une session Checkout, accéder au portail de facturation et suivre l'état de l'abonnement. Les webhooks Stripe<sup>[\[2\]](#ref-stripe)</sup> alimentent la synchronisation du plan de l'utilisateur: le retour du navigateur après paiement ne suffit pas à lui seul à établir ses droits.
+
+Les limites applicatives restent centralisées dans un service distinct, `PlanLimitService`. Cashier<sup>[\[3\]](#ref-cashier)</sup> gère la relation avec Stripe<sup>[\[2\]](#ref-stripe)</sup> et GameSentry détermine ce que les offres Free et Pro autorisent.
+
+## Pourquoi Inertia et React ?
+
+L'interface utilise **React 19<sup>[\[9\]](#ref-react)</sup>, TypeScript<sup>[\[11\]](#ref-typescript)</sup> et Tailwind CSS 4<sup>[\[12\]](#ref-tailwind)</sup>**, reliés à Laravel<sup>[\[4\]](#ref-laravel)</sup> par **Inertia 3<sup>[\[10\]](#ref-inertia)</sup>**. Les contrôleurs Laravel<sup>[\[4\]](#ref-laravel)</sup> renvoient les pages et leurs données et Inertia<sup>[\[10\]](#ref-inertia)</sup> prend en charge les navigations côté client et React<sup>[\[9\]](#ref-react)</sup> affiche les composants interactifs.
+
+Pour ce tableau de bord, cette architecture permet de garder les routes, la session et les autorisations dans Laravel<sup>[\[4\]](#ref-laravel)</sup>, sans construire une API REST dédiée à un frontend séparé. Elle conserve une expérience proche d'une SPA, avec un backend qui reste responsable de la navigation et des données transmises.
+
+Une SPA React<sup>[\[9\]](#ref-react)</sup> découplée aurait demandé un contrat d'API et davantage de coordination autour des formulaires, des erreurs et de l'authentification. Next.js<sup>[\[13\]](#ref-next)</sup> aurait été pertinent pour une application centrée sur son écosystème ou des besoins de rendu spécifiques. Associé au backend Laravel<sup>[\[4\]](#ref-laravel)</sup> existant, il aurait ajouté un second framework applicatif à exploiter. GameSentry n'a pas besoin de cette séparation pour son interface principalement authentifiée.
+
+Le compromis est assumé: les pages React<sup>[\[9\]](#ref-react)</sup> sont liées aux contrôleurs Laravel<sup>[\[4\]](#ref-laravel)</sup>. Si un client mobile ou une API publique devenait nécessaire, il faudrait concevoir cette interface supplémentaire. Inertia<sup>[\[10\]](#ref-inertia)</sup> ne la fournit pas automatiquement.
+
+## Architecture de l'application
+
+Le navigateur dialogue avec Laravel<sup>[\[4\]](#ref-laravel)</sup> à travers Caddy<sup>[\[14\]](#ref-caddy)</sup>. Le scheduler et le worker partagent PostgreSQL<sup>[\[15\]](#ref-postgresql)</sup> avec le processus web et la file de jobs est elle-même stockée en base. Le schéma présente les principaux flux applicatifs, sans détailler les réseaux Docker<sup>[\[16\]](#ref-docker)</sup>.
+
+{(
+
+<figure class="not-prose my-8" style={{ marginLeft: 0, marginRight: 0 }}>
+  <div
+    style={{ overflowX: "auto" }}
+    tabIndex="0"
+    role="region"
+    aria-label="Architecture de GameSentry"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 680 390"
+      role="img"
+      aria-labelledby="gs-architecture-title gs-architecture-desc"
+      style={{
+        width: "100%",
+        minWidth: "580px",
+        height: "auto",
+        fontFamily: "inherit",
+      }}
+    >
+      <title id="gs-architecture-title">Architecture de GameSentry</title>
+      <desc id="gs-architecture-desc">
+        Le navigateur accède à Laravel par Caddy. Laravel et le scheduler
+        écrivent dans PostgreSQL. Le worker consomme les jobs et enregistre
+        leurs résultats dans la même base.
+      </desc>
+      <defs>
+        <marker
+          id="gs-architecture-arrow"
+          viewBox="0 0 10 10"
+          refX="9"
+          refY="5"
+          markerWidth="7"
+          markerHeight="7"
+          orient="auto-start-reverse"
+        >
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#a1a1aa" />
+        </marker>
+      </defs>
+      <path
+        d="M 195 60 H 240"
+        fill="none"
+        stroke="#a1a1aa"
+        stroke-width="2"
+        marker-end="url(#gs-architecture-arrow)"
+      />
+      <path
+        d="M 430 60 H 475"
+        fill="none"
+        stroke="#a1a1aa"
+        stroke-width="2"
+        marker-end="url(#gs-architecture-arrow)"
+      />
+      <path
+        d="M 565 95 V 145 H 340 V 180"
+        fill="none"
+        stroke="#a1a1aa"
+        stroke-width="2"
+        marker-end="url(#gs-architecture-arrow)"
+      />
+      <path
+        d="M 180 290 V 215 H 235"
+        fill="none"
+        stroke="#a1a1aa"
+        stroke-width="2"
+        marker-end="url(#gs-architecture-arrow)"
+      />
+      <path
+        d="M 445 215 H 500 V 290"
+        fill="none"
+        stroke="#a1a1aa"
+        stroke-width="2"
+        marker-end="url(#gs-architecture-arrow)"
+      />
+      <path
+        d="M 410 325 H 370 V 250"
+        fill="none"
+        stroke="#a1a1aa"
+        stroke-width="2"
+        marker-end="url(#gs-architecture-arrow)"
+      />
+      <g>
+        <rect
+          x="15"
+          y="25"
+          width="180"
+          height="70"
+          rx="10"
+          fill="#27272a"
+          stroke="#71717a"
+        />
+        <text
+          x="105.0"
+          y="54"
+          text-anchor="middle"
+          fill="#fafafa"
+          font-size="16"
+          font-weight="600"
+        >
+          Navigateur
+        </text>
+        <text
+          x="105.0"
+          y="76"
+          text-anchor="middle"
+          fill="#d4d4d8"
+          font-size="12"
+        >
+          React + Inertia
+        </text>
+      </g>
+      <g>
+        <rect
+          x="240"
+          y="25"
+          width="190"
+          height="70"
+          rx="10"
+          fill="#27272a"
+          stroke="#71717a"
+        />
+        <text
+          x="335.0"
+          y="54"
+          text-anchor="middle"
+          fill="#fafafa"
+          font-size="16"
+          font-weight="600"
+        >
+          Caddy
+        </text>
+        <text
+          x="335.0"
+          y="76"
+          text-anchor="middle"
+          fill="#d4d4d8"
+          font-size="12"
+        >
+          Entrée HTTP / HTTPS
+        </text>
+      </g>
+      <g>
+        <rect
+          x="475"
+          y="25"
+          width="180"
+          height="70"
+          rx="10"
+          fill="#27272a"
+          stroke="#71717a"
+        />
+        <text
+          x="565.0"
+          y="54"
+          text-anchor="middle"
+          fill="#fafafa"
+          font-size="16"
+          font-weight="600"
+        >
+          Laravel web
+        </text>
+        <text
+          x="565.0"
+          y="76"
+          text-anchor="middle"
+          fill="#d4d4d8"
+          font-size="12"
+        >
+          Fortify · Cashier
+        </text>
+      </g>
+      <g>
+        <rect
+          x="235"
+          y="180"
+          width="210"
+          height="70"
+          rx="10"
+          fill="#27272a"
+          stroke="#71717a"
+        />
+        <text
+          x="340.0"
+          y="209"
+          text-anchor="middle"
+          fill="#fafafa"
+          font-size="16"
+          font-weight="600"
+        >
+          PostgreSQL
+        </text>
+        <text
+          x="340.0"
+          y="231"
+          text-anchor="middle"
+          fill="#d4d4d8"
+          font-size="12"
+        >
+          Données · jobs · cache · sessions
+        </text>
+      </g>
+      <g>
+        <rect
+          x="70"
+          y="290"
+          width="220"
+          height="70"
+          rx="10"
+          fill="#27272a"
+          stroke="#71717a"
+        />
+        <text
+          x="180.0"
+          y="319"
+          text-anchor="middle"
+          fill="#fafafa"
+          font-size="16"
+          font-weight="600"
+        >
+          Scheduler
+        </text>
+        <text
+          x="180.0"
+          y="341"
+          text-anchor="middle"
+          fill="#d4d4d8"
+          font-size="12"
+        >
+          Planifie les jobs en base
+        </text>
+      </g>
+      <g>
+        <rect
+          x="410"
+          y="290"
+          width="220"
+          height="70"
+          rx="10"
+          fill="#27272a"
+          stroke="#71717a"
+        />
+        <text
+          x="520.0"
+          y="319"
+          text-anchor="middle"
+          fill="#fafafa"
+          font-size="16"
+          font-weight="600"
+        >
+          Worker
+        </text>
+        <text
+          x="520.0"
+          y="341"
+          text-anchor="middle"
+          fill="#d4d4d8"
+          font-size="12"
+        >
+          Traite les jobs et appelle les API
+        </text>
+      </g>
+    </svg>
+  </div>
+  <figcaption
+    style={{ color: "#a1a1aa", fontSize: "0.875rem", marginTop: "0.75rem" }}
+  >
+    Une même image applicative pour trois processus: web, scheduler et worker.
+    Les appels externes sont détaillés dans la section suivante.
+  </figcaption>
+</figure>
+
+)}
+
+## Les intégrations externes
+
+### Discord: installer le bot et publier les messages
+
+L'association d'un serveur passe par le parcours d'autorisation **OAuth2 de Discord<sup>[\[1\]](#ref-discord)</sup>**, avec les scopes d'installation du bot. Un paramètre `state` conservé en session est vérifié au retour. Le backend vérifie ensuite la présence du bot et récupère les salons proposés à l'utilisateur.
+
+Ce parcours sert à installer et associer le bot et la connexion au compte GameSentry reste gérée par Laravel<sup>[\[4\]](#ref-laravel)</sup> et Fortify<sup>[\[8\]](#ref-fortify)</sup>. Les requêtes vers Discord<sup>[\[1\]](#ref-discord)</sup> utilisent le token du bot conservé côté serveur. Les messages combinent une mention du joueur, le commentaire généré et un embed de statistiques. Les mentions autorisées sont limitées à l'utilisateur Discord<sup>[\[1\]](#ref-discord)</sup> ciblé.
+
+### Riot: identifier les joueurs et détecter les nouvelles parties
+
+L'API Account permet de résoudre un Riot ID<sup>[\[6\]](#ref-riot)</sup> en **PUUID**, l'identifiant utilisé pour retrouver l'historique. Les services de GameSentry prennent ensuite en charge les endpoints et les routages propres à League of Legends et Teamfight Tactics, ainsi que les métadonnées de profil nécessaires.
+
+L'application interroge périodiquement les historiques: elle ne reçoit pas un événement push pour chaque fin de partie. Les API Riot<sup>[\[6\]](#ref-riot)</sup> appliquent plusieurs niveaux de limites, notamment par application, méthode et service. Le budget de jobs configuré dans GameSentry est donc un réglage interne, pas une reproduction exacte du quota Riot<sup>[\[6\]](#ref-riot)</sup>.
+
+Les réponses `429` déclenchent une temporisation par jeu, calculée en tenant compte de `Retry-After` lorsqu'il est disponible. Le volume de joueurs influence aussi l'intervalle de polling. Ces protections limitent la pression sur les API, sans promettre un suivi instantané ni l'absence de rate limiting.
+
+### Data Dragon: enrichir les résumés visuels
+
+**Data Dragon<sup>[\[17\]](#ref-data-dragon)</sup>** fournit les ressources statiques de Riot<sup>[\[6\]](#ref-riot)</sup> utilisées pour les icônes de profil et les illustrations de champions League of Legends. GameSentry construit les URL correspondant aux ressources et à leur version pendant que les données des parties proviennent, elles, des API de matchs.
+
+La configuration de ces visuels est séparée du traitement principal. Une ressource non disponible ne doit pas empêcher la construction du résumé: les images peuvent être omises.
+
+### Groq: commenter des statistiques déjà calculées
+
+Le service Groq<sup>[\[18\]](#ref-groq)</sup> reçoit un résumé normalisé de la partie. Le calcul et la sélection des statistiques restent dans le code applicatif et le modèle intervient pour produire un court commentaire humoristique en français.
+
+Le prompt demande une phrase complète, concise et fondée sur les données fournies. Cette consigne ne constitue pas une garantie absolue sur la réponse d'un modèle. Les appels disposent de timeouts et d'un quota quotidien. Le commentaire obtenu est enregistré pour être réutilisé si l'envoi Discord<sup>[\[1\]](#ref-discord)</sup> doit être retenté.
+
+Dans l'implémentation actuelle, une erreur de génération entraîne une reprise du job. Si le quota quotidien est épuisé, la notification passe en échec: il n'existe pas encore de mode dégradé envoyant uniquement les statistiques.
+
+## Pourquoi une offre Pro ?
+
+Chaque joueur suivi ajoute des consultations périodiques de Riot<sup>[\[6\]](#ref-riot)</sup>, puis potentiellement une récupération de partie, une génération et un envoi Discord<sup>[\[1\]](#ref-discord)</sup>. Les quotas par compte rendent cette consommation plus prévisible et évitent de proposer un usage illimité sur une infrastructure et des API à capacité limitée.
+
+| Limite par compte                                         | Free | Pro |
+| --------------------------------------------------------- | ---- | --- |
+| Serveurs Discord<sup>[\[1\]](#ref-discord)</sup> associés | 1    | 3   |
+| Joueurs suivis au total                                   | 3    | 15  |
+| Appels Groq<sup>[\[18\]](#ref-groq)</sup> par jour        | 50   | 250 |
+
+L'offre Pro donne accès à une capacité supérieure tout en conservant des bornes explicites. Elle permet également de mettre en œuvre un parcours complet d'abonnement, de facturation et de synchronisation des droits.
+
+**L'abonnement ne relève pas les quotas attribués par Riot<sup>[\[6\]](#ref-riot)</sup>.** Les deux offres partagent les mêmes mécanismes de régulation. Limiter les comptes aide à maîtriser la charge. Les budgets de polling, les temporisations et la gestion des erreurs restent nécessaires quel que soit le plan.
+
+## Séparer la découverte des parties de leur notification
+
+Le traitement est divisé en deux étapes. Un premier job interroge l'historique Riot<sup>[\[6\]](#ref-riot)</sup>, compare les identifiants reçus au dernier identifiant connu et crée les notifications correspondant aux nouvelles parties. Un second récupère les détails, prépare le résumé, sollicite Groq<sup>[\[18\]](#ref-groq)</sup> et envoie le message à Discord<sup>[\[1\]](#ref-discord)</sup>.
+
+Cette séparation permet de reprendre l'envoi d'une notification sans refaire systématiquement toute la découverte des parties. Lors de l'ajout d'un joueur, l'application initialise un point de départ dans son historique: ses anciennes parties ne sont pas annoncées comme nouvelles.
+
+Le polling tient compte du nombre de joueurs et de budgets configurés. Les réponses de limitation de Riot<sup>[\[6\]](#ref-riot)</sup> déclenchent une temporisation par jeu. La notification reste donc **périodique**, avec un délai dépendant du scheduler, de la file et des API externes.
+
+{(
+
+<figure class="not-prose my-8" style={{ marginLeft: 0, marginRight: 0 }}>
+  <div
+    style={{ overflowX: "auto" }}
+    tabIndex="0"
+    role="region"
+    aria-label="De la découverte à la notification"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 650 605"
+      role="img"
+      aria-labelledby="gs-polling-title gs-polling-desc"
+      style={{
+        width: "100%",
+        minWidth: "580px",
+        height: "auto",
+        fontFamily: "inherit",
+      }}
+    >
+      <title id="gs-polling-title">De la découverte à la notification</title>
+      <desc id="gs-polling-desc">
+        Le scheduler lance le polling. Les limites Riot provoquent une
+        temporisation. Les nouvelles parties créent des notifications
+        persistantes. Un second job prépare le message, le conserve et le
+        transmet à Discord.
+      </desc>
+      <defs>
+        <marker
+          id="gs-polling-arrow"
+          viewBox="0 0 10 10"
+          refX="9"
+          refY="5"
+          markerWidth="7"
+          markerHeight="7"
+          orient="auto-start-reverse"
+        >
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#a1a1aa" />
+        </marker>
+      </defs>
+      <path
+        d="M 195 85 V 125"
+        fill="none"
+        stroke="#a1a1aa"
+        stroke-width="2"
+        marker-end="url(#gs-polling-arrow)"
+      />
+      <path
+        d="M 195 195 V 265"
+        fill="none"
+        stroke="#a1a1aa"
+        stroke-width="2"
+        marker-end="url(#gs-polling-arrow)"
+      />
+      <path
+        d="M 195 335 V 380"
+        fill="none"
+        stroke="#a1a1aa"
+        stroke-width="2"
+        marker-end="url(#gs-polling-arrow)"
+      />
+      <path
+        d="M 195 450 V 495"
+        fill="none"
+        stroke="#a1a1aa"
+        stroke-width="2"
+        marker-end="url(#gs-polling-arrow)"
+      />
+      <path
+        d="M 340 160 H 415"
+        fill="none"
+        stroke="#a1a1aa"
+        stroke-width="2"
+        marker-end="url(#gs-polling-arrow)"
+      />
+      <path
+        d="M 500 195 V 230 H 25 V 160 H 50"
+        fill="none"
+        stroke="#a1a1aa"
+        stroke-width="2"
+        marker-end="url(#gs-polling-arrow)"
+      />
+      <path
+        d="M 340 530 H 415"
+        fill="none"
+        stroke="#a1a1aa"
+        stroke-width="2"
+        marker-end="url(#gs-polling-arrow)"
+      />
+      <g>
+        <rect
+          x="50"
+          y="15"
+          width="290"
+          height="70"
+          rx="10"
+          fill="#27272a"
+          stroke="#71717a"
+        />
+        <text
+          x="195.0"
+          y="44"
+          text-anchor="middle"
+          fill="#fafafa"
+          font-size="16"
+          font-weight="600"
+        >
+          Scheduler
+        </text>
+        <text
+          x="195.0"
+          y="66"
+          text-anchor="middle"
+          fill="#d4d4d8"
+          font-size="12"
+        >
+          Sélection des joueurs à interroger
+        </text>
+      </g>
+      <g>
+        <rect
+          x="50"
+          y="125"
+          width="290"
+          height="70"
+          rx="10"
+          fill="#27272a"
+          stroke="#71717a"
+        />
+        <text
+          x="195.0"
+          y="154"
+          text-anchor="middle"
+          fill="#fafafa"
+          font-size="16"
+          font-weight="600"
+        >
+          Job de polling
+        </text>
+        <text
+          x="195.0"
+          y="176"
+          text-anchor="middle"
+          fill="#d4d4d8"
+          font-size="12"
+        >
+          Historique Riot + curseur
+        </text>
+      </g>
+      <g>
+        <rect
+          x="415"
+          y="125"
+          width="210"
+          height="70"
+          rx="10"
+          fill="#27272a"
+          stroke="#71717a"
+        />
+        <text
+          x="520.0"
+          y="154"
+          text-anchor="middle"
+          fill="#fafafa"
+          font-size="16"
+          font-weight="600"
+        >
+          Réponse 429
+        </text>
+        <text
+          x="520.0"
+          y="176"
+          text-anchor="middle"
+          fill="#d4d4d8"
+          font-size="12"
+        >
+          Cooldown par jeu et reprise
+        </text>
+      </g>
+      <g>
+        <rect
+          x="50"
+          y="265"
+          width="290"
+          height="70"
+          rx="10"
+          fill="#27272a"
+          stroke="#71717a"
+        />
+        <text
+          x="195.0"
+          y="294"
+          text-anchor="middle"
+          fill="#fafafa"
+          font-size="16"
+          font-weight="600"
+        >
+          Nouvelles notifications
+        </text>
+        <text
+          x="195.0"
+          y="316"
+          text-anchor="middle"
+          fill="#d4d4d8"
+          font-size="12"
+        >
+          Une ligne par joueur et partie
+        </text>
+      </g>
+      <g>
+        <rect
+          x="50"
+          y="380"
+          width="290"
+          height="70"
+          rx="10"
+          fill="#27272a"
+          stroke="#71717a"
+        />
+        <text
+          x="195.0"
+          y="409"
+          text-anchor="middle"
+          fill="#fafafa"
+          font-size="16"
+          font-weight="600"
+        >
+          Job de notification
+        </text>
+        <text
+          x="195.0"
+          y="431"
+          text-anchor="middle"
+          fill="#d4d4d8"
+          font-size="12"
+        >
+          Détails Riot → résumé → Groq
+        </text>
+      </g>
+      <g>
+        <rect
+          x="50"
+          y="495"
+          width="290"
+          height="70"
+          rx="10"
+          fill="#27272a"
+          stroke="#71717a"
+        />
+        <text
+          x="195.0"
+          y="524"
+          text-anchor="middle"
+          fill="#fafafa"
+          font-size="16"
+          font-weight="600"
+        >
+          Persistance puis envoi
+        </text>
+        <text
+          x="195.0"
+          y="546"
+          text-anchor="middle"
+          fill="#d4d4d8"
+          font-size="12"
+        >
+          Message + nonce → Discord
+        </text>
+      </g>
+      <g>
+        <rect
+          x="415"
+          y="495"
+          width="210"
+          height="70"
+          rx="10"
+          fill="#27272a"
+          stroke="#71717a"
+        />
+        <text
+          x="520.0"
+          y="524"
+          text-anchor="middle"
+          fill="#fafafa"
+          font-size="16"
+          font-weight="600"
+        >
+          État final
+        </text>
+        <text
+          x="520.0"
+          y="546"
+          text-anchor="middle"
+          fill="#d4d4d8"
+          font-size="12"
+        >
+          Envoyé ou échec visible
+        </text>
+      </g>
+    </svg>
+  </div>
+  <figcaption
+    style={{ color: "#a1a1aa", fontSize: "0.875rem", marginTop: "0.75rem" }}
+  >
+    Sans nouvelle partie, aucune notification n’est créée. Les erreurs peuvent
+    provoquer une reprise. Le statut envoyé est enregistré après la livraison.
+  </figcaption>
+</figure>
+
+)}
+
+## Préparer les reprises et limiter les doublons
+
+Une requête externe peut réussir alors que le worker s'arrête avant d'enregistrer son résultat. Relancer aveuglément le job risquerait alors de republier le même message.
+
+GameSentry combine plusieurs protections: contrainte d'unicité entre joueur et partie en base, mécanismes d'unicité des jobs, verrous pendant leur exécution et nonce conservé pour l'envoi Discord<sup>[\[1\]](#ref-discord)</sup>. Le résumé, le commentaire généré et les données du message sont enregistrés avant l'envoi afin de pouvoir être réutilisés lors d'une reprise.
+
+Ces mécanismes réduisent les doublons dans les scénarios de reprise prévus, ils ne constituent pas une promesse de livraison exactement une fois dans toutes les situations. Les erreurs et les notifications échouées restent visibles pour permettre leur diagnostic.
+
+## Du développement au déploiement
+
+Le développement local utilise SQLite<sup>[\[19\]](#ref-sqlite)</sup>. En production, PostgreSQL 17<sup>[\[15\]](#ref-postgresql)</sup> stocke les données applicatives, mais aussi la file de jobs, le cache et les sessions. L'application n'a ainsi pas besoin d'un service Redis<sup>[\[20\]](#ref-redis)</sup> supplémentaire.
+
+Docker Compose<sup>[\[16\]](#ref-docker)</sup> sépare les processus web, worker et scheduler, qui utilisent la même image applicative. GitHub Actions<sup>[\[21\]](#ref-github-actions)</sup> exécute les validations avant sa publication sur GHCR<sup>[\[22\]](#ref-ghcr)</sup>. Le déploiement sélectionne l'image du commit concerné, résout sa référence par digest, applique les migrations et vérifie les services ainsi que l'endpoint public de santé. Un verrou partagé sur le VPS sérialise les déploiements et les opérations de sauvegarde afin qu'ils ne se chevauchent pas.
+
+Le dépôt comprend des tests PHPUnit<sup>[\[23\]](#ref-phpunit)</sup>, de l'analyse statique PHP<sup>[\[5\]](#ref-php)</sup> et des contrôles TypeScript<sup>[\[11\]](#ref-typescript)</sup>. La CI exerce également les tests sur PostgreSQL<sup>[\[15\]](#ref-postgresql)</sup>, en complément de SQLite<sup>[\[19\]](#ref-sqlite)</sup>.
+
+## Bilan et pistes d'amélioration
+
+L'intérêt de GameSentry dépasse la génération du commentaire: le projet m'a permis de travailler sur une chaîne asynchrone reliant plusieurs API, avec des quotas, des états persistants et des reprises après erreur.
+
+Les prochaines améliorations concernent notamment les tests directs du pipeline de polling et de livraison, les métriques opérationnelles et les préférences de notification. Le périmètre actuel couvre League of Legends et Teamfight Tactics. Valorant reste une piste conditionnée à l'accès API nécessaire. Il serait également intéressant de proposer un mode dégradé lorsque le quota Groq<sup>[\[18\]](#ref-groq)</sup> est épuisé, en envoyant uniquement les statistiques.
+
+## Références techniques
+
+Les numéros dans le texte renvoient aux documentations officielles ci-dessous.
+
+1. <span id="ref-discord" style={{ scrollMarginTop: "6rem" }}></span>
+   [Discord](https://docs.discord.com/developers/topics/oauth2) — Installation
+   OAuth2 et API du bot.
+2. <span id="ref-stripe" style={{ scrollMarginTop: "6rem" }}></span>[Stripe
+   Billing](https://docs.stripe.com/billing) — Abonnements, paiement et
+   facturation.
+3. <span id="ref-cashier" style={{ scrollMarginTop: "6rem" }}></span>[Laravel
+   Cashier](https://laravel.com/framework/docs/13.x/billing) — Intégration de
+   Stripe dans Laravel.
+4. <span id="ref-laravel" style={{ scrollMarginTop: "6rem" }}></span>
+   [Laravel](https://laravel.com/framework/docs/13.x/queues) —
+   [Queues](https://laravel.com/framework/docs/queues), reprises et traitements
+   en arrière-plan. Voir aussi le
+   [scheduler](https://laravel.com/framework/docs/13.x/scheduling).
+5. <span id="ref-eloquent" style={{ scrollMarginTop: "6rem" }}></span>
+   [Eloquent](https://laravel.com/framework/docs/13.x/eloquent) — ORM et modèles
+   de données.
+6. <span id="ref-php" style={{ scrollMarginTop: "6rem" }}></span>
+   [PHP](https://www.php.net/manual/en/) — Manuel du langage.
+7. <span id="ref-riot" style={{ scrollMarginTop: "6rem" }}></span>[Riot Games
+   Developer
+   Portal](https://developer.riotgames.com/docs/portal#web-apis_rate-limiting) —
+   Limites des API : application, méthode et service.
+8. <span id="ref-fortify" style={{ scrollMarginTop: "6rem" }}></span>[Laravel
+   Fortify](https://laravel.com/framework/docs/13.x/fortify) — Authentification
+   côté serveur.
+9. <span id="ref-react" style={{ scrollMarginTop: "6rem" }}></span>
+   [React](https://react.dev/) — Composants et interfaces interactives.
+10. <span id="ref-inertia" style={{ scrollMarginTop: "6rem" }}></span>
+    [Inertia](https://inertiajs.com/docs/v3/getting-started/index) — Navigation
+    et partage de données entre le backend et les pages.
+11. <span id="ref-typescript" style={{ scrollMarginTop: "6rem" }}></span>
+    [TypeScript](https://www.typescriptlang.org/docs/) — Typage du code
+    frontend.
+12. <span id="ref-tailwind" style={{ scrollMarginTop: "6rem" }}></span>[Tailwind
+    CSS](https://tailwindcss.com/docs) — Styles utilitaires.
+13. <span id="ref-next" style={{ scrollMarginTop: "6rem" }}></span>
+    [Next.js](https://nextjs.org/docs) — Framework évoqué comme alternative, non
+    utilisé dans le projet.
+14. <span id="ref-caddy" style={{ scrollMarginTop: "6rem" }}></span>
+    [Caddy](https://caddyserver.com/docs/) — Serveur HTTP et HTTPS.
+15. <span id="ref-postgresql" style={{ scrollMarginTop: "6rem" }}></span>
+    [PostgreSQL 17](https://www.postgresql.org/docs/17/) — Base de données de
+    production.
+16. <span id="ref-docker" style={{ scrollMarginTop: "6rem" }}></span>[Docker
+    Compose](https://docs.docker.com/compose/) — Exécution des services
+    conteneurisés.
+17. <span id="ref-data-dragon" style={{ scrollMarginTop: "6rem" }}></span>[Data
+    Dragon](https://developer.riotgames.com/docs/lol#data-dragon) — Ressources
+    statiques de League of Legends.
+18. <span id="ref-groq" style={{ scrollMarginTop: "6rem" }}></span>
+    [Groq](https://console.groq.com/docs/text-chat) — API de génération de
+    texte.
+19. <span id="ref-sqlite" style={{ scrollMarginTop: "6rem" }}></span>
+    [SQLite](https://sqlite.org/docs.html) — Base de données locale.
+20. <span id="ref-redis" style={{ scrollMarginTop: "6rem" }}></span>
+    [Redis](https://redis.io/docs/latest/) — Service évoqué comme alternative,
+    non requis ici.
+21. <span id="ref-github-actions" style={{ scrollMarginTop: "6rem" }}></span>
+    [GitHub Actions](https://docs.github.com/en/actions) — Automatisation des
+    validations et du déploiement.
+22. <span id="ref-ghcr" style={{ scrollMarginTop: "6rem" }}></span>[GitHub
+    Container
+    Registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry)
+    — Publication et récupération des images de conteneurs.
+23. <span id="ref-phpunit" style={{ scrollMarginTop: "6rem" }}></span>
+    [PHPUnit](https://docs.phpunit.de/) — Tests automatisés PHP.
