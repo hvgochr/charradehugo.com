@@ -137,12 +137,14 @@ export function createWebSiteSchema(
  * @param article - The article collection entry from Astro content
  * @param siteUrl - The base URL of the site
  * @param articleUrl - The full URL of the article
+ * @param coverImageUrl - The absolute URL of the article cover image
  * @returns Article schema object for structured data
  */
 export function createArticleSchema(
   article: CollectionEntry<"articles">,
   siteUrl: string,
   articleUrl: string,
+  coverImageUrl: string,
   locale: Locale = "en"
 ): Article {
   const schema: Article = {
@@ -150,10 +152,7 @@ export function createArticleSchema(
     "@type": "Article",
     headline: article.data.title,
     description: article.data.description,
-    image:
-      typeof article.data.cover === "string"
-        ? article.data.cover
-        : new URL("/og-image.png", siteUrl).href,
+    image: coverImageUrl,
     datePublished: article.data.pubDate.toISOString(),
     author: createPersonSchema(siteUrl, locale),
     publisher: createOrganizationSchema(siteUrl),

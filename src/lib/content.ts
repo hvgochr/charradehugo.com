@@ -1,4 +1,4 @@
-import { getCollection } from "astro:content";
+import { getCollection, getEntries } from "astro:content";
 import type { CollectionEntry } from "astro:content";
 import type { Locale } from "./i18n";
 
@@ -25,6 +25,27 @@ export async function getPublishedProjects(
   return all
     .filter((p) => !p.data.isDraft && p.id.startsWith(`${locale}/`))
     .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+}
+
+/**
+ * Resolves the explicitly configured related articles for an article.
+ * Drafts and cross-locale references are excluded from public suggestions.
+ */
+export async function getRelatedArticles(
+  article: CollectionEntry<"articles">,
+  locale: Locale
+): Promise<CollectionEntry<"articles">[]> {
+  if (!article.data.relatedArticles?.length) return [];
+
+  const relatedArticles = await getEntries(article.data.relatedArticles);
+
+  return relatedArticles.filter(
+    (relatedArticle): relatedArticle is CollectionEntry<"articles"> =>
+      Boolean(relatedArticle) &&
+      !relatedArticle.data.isDraft &&
+      relatedArticle.id !== article.id &&
+      relatedArticle.id.startsWith(`${locale}/`)
+  );
 }
 
 /**

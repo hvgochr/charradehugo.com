@@ -6,7 +6,8 @@ import ArticleCard from "@/components/ArticleCard.astro";
 import { render } from "astro:content";
 import { Image } from "astro:assets";
 import { formatDate } from "@/lib/utils";
-import { getPublishedArticles } from "@/lib/content";
+import { getAbsoluteImageUrl } from "@/lib/images";
+import { getPublishedArticles, getRelatedArticles } from "@/lib/content";
 import { getSlug, useTranslations } from "@/lib/i18n";
 import {
   createArticleSchema,
@@ -25,15 +26,14 @@ const t = useTranslations("fr");
 const article = Astro.props;
 const { Content, headings } = await render(article);
 
-const allArticles = (await getPublishedArticles("fr"))
-  .filter((a) => a.id !== article.id)
-  .slice(0, 3);
+const relatedArticles = await getRelatedArticles(article, "fr");
 
 const siteUrl = Astro.site?.toString() || Astro.url.origin;
 const articleUrl = new URL(`/fr/blog/${getSlug(article.id)}`, siteUrl).href;
+const coverImageUrl = await getAbsoluteImageUrl(article.data.cover, siteUrl);
 
 const structuredData = [
-  createArticleSchema(article, siteUrl, articleUrl, "fr"),
+  createArticleSchema(article, siteUrl, articleUrl, coverImageUrl, "fr"),
   createBreadcrumbSchema([
     { name: "Accueil", url: new URL("/fr", siteUrl).href },
     { name: "Blog", url: new URL("/fr/blog", siteUrl).href },
@@ -45,6 +45,7 @@ const structuredData = [
 <ContentLayout
   title={`${article.data.title} - Hugo Charrade, Développeur Full-Stack`}
   description={article.data.description}
+  ogImage={coverImageUrl}
   articleDate={article.data.pubDate}
   articleModified={article.data.updateDate}
   structuredData={structuredData}
@@ -85,13 +86,13 @@ const structuredData = [
     </div>
 
     {
-      allArticles.length > 0 && (
+      relatedArticles.length > 0 && (
         <div class="mt-16 pt-12 border-t border-zinc-800">
           <h2 class="text-2xl font-semibold text-zinc-200 mb-6">
-            {t.blog.recentArticles}
+            {t.blog.relatedArticles}
           </h2>
           <ul class="space-y-6">
-            {allArticles.map((relatedArticle) => (
+            {relatedArticles.map((relatedArticle) => (
               <li>
                 <ArticleCard article={relatedArticle} basePath="/fr/blog" />
               </li>

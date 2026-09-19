@@ -5,6 +5,7 @@ import { ClientRouter } from "astro:transitions";
 import StructuredData from "./StructuredData.astro";
 import type { StructuredDataSchema } from "@/lib/structuredData";
 import { getLocaleFromUrl, getLocalePath } from "@/lib/i18n";
+import { getLocalizedPaths } from "@/lib/localizedRoutes";
 
 interface Props {
   title: string;
@@ -33,9 +34,6 @@ const socialImageURL = new URL(
   Astro.site || Astro.url.origin
 ).href;
 
-const siteOrigin = (Astro.site || Astro.url.origin)
-  .toString()
-  .replace(/\/$/, "");
 const locale = getLocaleFromUrl(Astro.url);
 const ogLocale = locale === "fr" ? "fr_FR" : "en_US";
 
@@ -44,9 +42,13 @@ const defaultDescription =
     ? "Développeur full-stack spécialisé dans la création d'applications web rapides et évolutives avec Symfony, Laravel et les frameworks JavaScript modernes."
     : "Full-stack developer building fast and scalable web applications with Symfony, Laravel and modern JavaScript frameworks.";
 
-const barePath = Astro.url.pathname.replace(/^\/fr(\/|$)/, "/");
-const enURL = `${siteOrigin}${getLocalePath("en", barePath)}`;
-const frURL = `${siteOrigin}${getLocalePath("fr", barePath)}`;
+const localizedPaths = await getLocalizedPaths(Astro.url.pathname);
+const enURL = localizedPaths.en
+  ? new URL(localizedPaths.en, Astro.site || Astro.url.origin).href
+  : undefined;
+const frURL = localizedPaths.fr
+  ? new URL(localizedPaths.fr, Astro.site || Astro.url.origin).href
+  : undefined;
 ---
 
 <meta charset="UTF-8" />
@@ -57,7 +59,7 @@ const frURL = `${siteOrigin}${getLocalePath("fr", barePath)}`;
   rel="alternate"
   type="application/rss+xml"
   title={`${title} RSS Feed`}
-  href="/rss.xml"
+  href={getLocalePath(locale, "/rss.xml")}
 />
 <link rel="author" href={Astro.site || Astro.url.origin} />
 <meta name="generator" content={Astro.generator} />
@@ -76,9 +78,9 @@ const frURL = `${siteOrigin}${getLocalePath("fr", barePath)}`;
 
 <link rel="canonical" href={canonicalURL} />
 
-<link rel="alternate" hreflang="en" href={enURL} />
-<link rel="alternate" hreflang="fr" href={frURL} />
-<link rel="alternate" hreflang="x-default" href={enURL} />
+{enURL && <link rel="alternate" hreflang="en" href={enURL} />}
+{frURL && <link rel="alternate" hreflang="fr" href={frURL} />}
+{enURL && <link rel="alternate" hreflang="x-default" href={enURL} />}
 
 <title>{title}</title>
 <meta name="description" content={description ?? defaultDescription} />
@@ -98,9 +100,6 @@ const frURL = `${siteOrigin}${getLocalePath("fr", barePath)}`;
 <meta property="og:url" content={Astro.url} />
 <meta property="og:site_name" content="Hugo Charrade Portfolio" />
 <meta property="og:locale" content={ogLocale} />
-<meta property="og:image:type" content="image/png" />
-<meta property="og:image:width" content="1200" />
-<meta property="og:image:height" content="630" />
 <meta property="og:image" content={socialImageURL} />
 <meta property="og:type" content={articleDate ? "article" : "website"} />
 {
@@ -124,9 +123,6 @@ const frURL = `${siteOrigin}${getLocalePath("fr", barePath)}`;
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:creator" content="@hvgochr" />
 <meta name="twitter:title" content={title} />
-<meta name="twitter:image:type" content="image/png" />
-<meta name="twitter:image:width" content="1200" />
-<meta name="twitter:image:height" content="630" />
 <meta name="twitter:image" content={socialImageURL} />
 <meta name="twitter:description" content={description ?? defaultDescription} />
 <meta name="twitter:url" content={Astro.url} />
