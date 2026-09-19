@@ -20,6 +20,7 @@
     "@paper-design/shaders": "^0.0.71",
     "@tailwindcss/vite": "^4.1.18",
     "astro": "^5.16.11",
+    "rehype-external-links": "^3.0.0",
     "tailwindcss": "^4.1.18"
   },
   "devDependencies": {
