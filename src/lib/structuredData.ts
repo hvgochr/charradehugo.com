@@ -78,7 +78,7 @@ export function createPersonSchema(
     "@type": "Person",
     name: "Hugo Charrade",
     url: new URL("/", siteUrl).href,
-    image: new URL("/og-image.png", siteUrl).href,
+    image: new URL("/images/site/og-image.png", siteUrl).href,
     jobTitle:
       locale === "fr" ? "Développeur Full-Stack" : "Full-Stack Developer",
     description:
@@ -104,7 +104,7 @@ export function createOrganizationSchema(siteUrl: string): Organization {
     "@type": "Organization",
     name: "Hugo Charrade Portfolio",
     url: new URL("/", siteUrl).href,
-    logo: new URL("/og-image.png", siteUrl).href,
+    logo: new URL("/images/site/og-image.png", siteUrl).href,
   };
 }
 
