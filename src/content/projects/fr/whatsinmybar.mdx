@@ -1,0 +1,304 @@
+---
+title: "WhatsInMyBar"
+description: "Une plateforme de recettes de cocktails avec une API Symfony et API Platform, une interface Nuxt et des parcours de publication, de partage et de modération."
+cover: "../../../../public/images/projects/whatsinmybar/cover-fr.png"
+coverAlt: "Visuel de présentation du portfolio de Hugo Charrade"
+categories: ["Symfony", "Nuxt", "Docker"]
+links:
+  - label: "Voir le projet"
+    url: "https://whatsinmybar.charradehugo.com"
+  - label: "Code source"
+    url: "https://github.com/hvgochr/whatsinmybar"
+pubDate: 2026-09-16
+isDraft: false
+---
+
+## Le projet
+
+WhatsInMyBar est une application de découverte et de partage de recettes de cocktails, avec ou sans alcool. Elle permet de parcourir un catalogue, de publier ses propres recettes, de les enregistrer en favoris et d'échanger dans les commentaires.
+
+J'ai développé ce projet personnel autour d'un contenu simple en apparence: une recette. Derrière sa présentation, il faut pourtant coordonner des ingrédients, des quantités, des étapes, des images et plusieurs états de publication, tout en conservant des droits cohérents pour les visiteurs, les auteurs et les administrateurs.
+
+L'application est disponible en anglais. Elle réunit une interface de consultation, un espace personnel et une administration pour gérer les contenus et les signalements.
+
+## De Popotion à WhatsInMyBar
+
+WhatsInMyBar est une réédition personnelle de **Popotion**<sup>[\[28\]](#ref-popotion)</sup>, un projet réalisé en groupe pendant ma troisième année de BUT Informatique. J'avais été responsable d'une grande partie de la création de son API. Cette première version proposait déjà un catalogue de recettes, des ingrédients, des catégories, des commentaires et des favoris.
+
+J'ai repris ce point de départ pour retravailler l'application dans son ensemble. Popotion utilisait déjà Symfony<sup>[\[1\]](#ref-symfony)</sup> 6.4 et API Platform<sup>[\[3\]](#ref-api-platform)</sup> 3.2. J'ai conservé cette approche, en actualisant le socle technique et en approfondissant les règles métier, les tests et l'exploitation. Le frontend Vue<sup>[\[8\]](#ref-vue)</sup> construit avec Vite a laissé place à Nuxt<sup>[\[7\]](#ref-nuxt)</sup>, notamment pour rendre les pages de recettes côté serveur et gérer leurs métadonnées de partage.
+
+Le modèle des recettes a également évolué. Dans Popotion, les étapes de préparation étaient stockées dans un tableau au sein de la recette. WhatsInMyBar les représente par des entités ordonnées, avec une validation commune des conditions de publication. L'éditeur enregistre les métadonnées, les ingrédients et les étapes dans une transaction, tandis que la gestion des images tient compte à la fois des droits d'accès et de la persistance des fichiers.
+
+Cette reprise m'a permis de prolonger le travail réalisé sur l'API tout en prenant en charge le frontend et le déploiement. L'objectif est de faire évoluer le projet d'école vers une application personnelle exploitable sur un VPS, avec une session cohérente entre serveur et navigateur, des contrôles de qualité automatisés et une chaîne de livraison reproductible.
+
+## Ce que permet l'application
+
+Chaque recette rassemble une description, des ingrédients et leurs quantités, des étapes ordonnées, des catégories, une difficulté, un temps de préparation et un nombre de portions. Le catalogue propose une recherche textuelle, des filtres par catégorie ou ingrédient et des tris par date ou popularité.
+
+Un utilisateur peut créer un brouillon, modifier sa recette, ajouter une image, puis la publier ou l'archiver. Son profil présente ses publications. Ses recettes personnelles et ses favoris disposent de vues dédiées. Les commentaires acceptent des réponses, avec une profondeur limitée pour garder les discussions lisibles.
+
+L'administration permet de gérer les comptes, les recettes, les catégories et les ingrédients, ainsi que de traiter les signalements. Le statut éditorial d'une recette et son état de modération sont distincts: une publication peut être masquée sans perdre son contenu.
+
+## Pourquoi Symfony et API Platform ?
+
+Le backend utilise **Symfony 8.1<sup>[\[1\]](#ref-symfony)</sup> avec PHP 8.4<sup>[\[2\]](#ref-php)</sup>**, **API Platform 4.3<sup>[\[3\]](#ref-api-platform)</sup>** et **Doctrine ORM<sup>[\[4\]](#ref-doctrine)</sup>**. Cette combinaison fournit une base pour exposer des ressources structurées, valider les données et gérer les autorisations, tout en laissant la place aux traitements propres au projet.
+
+Symfony<sup>[\[1\]](#ref-symfony)</sup> regroupe les services applicatifs, la validation et la sécurité. Les règles de publication ou de visibilité peuvent ainsi être réutilisées par plusieurs routes, au lieu d'être reproduites dans chaque contrôleur.
+
+### API Platform pour les ressources et leurs collections
+
+API Platform<sup>[\[3\]](#ref-api-platform)</sup> fournit le socle des opérations sur les recettes et les taxonomies: lecture, écriture, sérialisation et pagination. Les groupes de sérialisation séparent les propriétés exposées de celles que le client peut modifier. Des extensions de requêtes ajoutent les filtres de recherche et les restrictions de visibilité.
+
+Les parcours plus spécifiques disposent de traitements dédiés. Enregistrer une recette complète, publier un brouillon ou traiter un signalement ne se résume pas toujours à modifier une propriété. Le projet associe donc les ressources du framework à des contrôleurs et services métier explicites.
+
+Ce choix réduit le travail répétitif, mais demande de comprendre les points d'extension du framework. Une règle doit rester vraie aussi bien sur une opération standard que sur une route personnalisée.
+
+### Doctrine et PostgreSQL pour la cohérence des données
+
+Doctrine ORM<sup>[\[4\]](#ref-doctrine)</sup> porte les relations entre recettes, auteurs, catégories, étapes et ingrédients. Une ligne d'ingrédient appartient à une recette et ajoute au référentiel commun sa quantité, son unité, sa position et une éventuelle note.
+
+PostgreSQL 16<sup>[\[5\]](#ref-postgresql)</sup> assure la persistance. Les transactions et les contraintes d'unicité complètent les validations applicatives, notamment lorsque plusieurs requêtes arrivent en même temps. Certaines opérations utilisent directement Doctrine DBAL<sup>[\[6\]](#ref-dbal)</sup> pour exprimer précisément les verrous ou les mises à jour atomiques nécessaires.
+
+## Pourquoi Nuxt et Vue ?
+
+Le frontend utilise **Nuxt 4<sup>[\[7\]](#ref-nuxt)</sup>, Vue 3<sup>[\[8\]](#ref-vue)</sup> et TypeScript<sup>[\[9\]](#ref-typescript)</sup>**. Le projet comporte des pages de contenu consultables directement depuis un lien: recettes, catégories et profils. Le rendu serveur permet d'envoyer leur contenu initial et leurs métadonnées avant l'exécution du JavaScript dans le navigateur.
+
+Nuxt<sup>[\[7\]](#ref-nuxt)</sup> fournit le routage, le chargement des données et les outils de gestion des métadonnées. Les interactions prennent ensuite le relais côté client: filtres, favoris, commentaires et édition. Les pages disposent d'URL canoniques et de métadonnées de partage. Le sitemap suit les contenus accessibles sans connexion.
+
+Une SPA seule aurait demandé un travail supplémentaire pour servir le contenu initial aux visiteurs et aux robots. Une interface entièrement rendue par le backend aurait également été possible. Ici, la séparation permet de travailler sur un véritable contrat d'API et de faire évoluer l'interface indépendamment des contrôleurs serveur.
+
+Le coût de ce choix est concret: deux applications à maintenir, des types et des erreurs à faire correspondre, et une session à rendre cohérente entre serveur et navigateur. L'API reste responsable des règles métier. L'interface ne doit pas devenir une seconde implémentation des autorisations.
+
+### Une interface sobre et des composants réutilisables
+
+L'interface repose sur **Tailwind CSS 4<sup>[\[10\]](#ref-tailwind)</sup>** et des composants **shadcn-vue<sup>[\[11\]](#ref-shadcn-vue)</sup>**, intégrés avec **shadcn-nuxt<sup>[\[12\]](#ref-shadcn-nuxt)</sup>** et construits sur les primitives de **Reka UI<sup>[\[13\]](#ref-reka)</sup>**. Cette base permet d'adapter les composants dans le projet tout en s'appuyant sur des comportements existants pour les menus, dialogues et contrôles de formulaire.
+
+La palette zinc, les thèmes clair et sombre et les composants communs donnent une continuité au catalogue, à l'éditeur et à l'administration. Les formulaires d'édition occupent des pages dédiées pour laisser de la place aux ingrédients, aux étapes et aux erreurs de validation.
+
+## Architecture de l'application
+
+Le monorepo contient deux applications, `apps/api` et `apps/web`. **Caddy<sup>[\[14\]](#ref-caddy)</sup>** est le point d'entrée HTTP et HTTPS: il dirige les pages vers Nuxt<sup>[\[7\]](#ref-nuxt)</sup> et les requêtes `/api` vers Symfony<sup>[\[1\]](#ref-symfony)</sup>, servi par **FrankenPHP<sup>[\[15\]](#ref-frankenphp)</sup>**.
+
+Pendant le rendu serveur, Nuxt<sup>[\[7\]](#ref-nuxt)</sup> contacte directement l'API sur un réseau privé. Après hydratation, le navigateur utilise le même domaine et le préfixe `/api`. PostgreSQL<sup>[\[5\]](#ref-postgresql)</sup> et les volumes persistants restent du côté backend. Les fichiers uploadés ne sont pas incorporés aux images applicatives.
+
+{(
+
+<figure class="not-prose my-8" style={{ marginLeft: 0, marginRight: 0 }}>
+<div style={{ overflowX: "auto" }} tabIndex="0" role="region" aria-label="Architecture de WhatsInMyBar">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 535" role="img" aria-labelledby="wimb-architecture-title wimb-architecture-desc" style={{ width: "100%", minWidth: "580px", height: "auto", fontFamily: "inherit" }}>
+<title id="wimb-architecture-title">Architecture de WhatsInMyBar</title>
+<desc id="wimb-architecture-desc">Le navigateur passe par Caddy. Les pages vont vers Nuxt et les requêtes API vers Symfony. Nuxt appelle également l'API pendant le rendu serveur. Seule l'API accède aux données et aux fichiers.</desc>
+<defs><marker id="wimb-architecture-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#a1a1aa" /></marker></defs>
+<path d="M 340 87 V 135" fill="none" stroke="#a1a1aa" stroke-width="2" marker-end="url(#wimb-architecture-arrow)" />
+<path d="M 295 207 V 235 H 155 V 275" fill="none" stroke="#a1a1aa" stroke-width="2" marker-end="url(#wimb-architecture-arrow)" />
+<path d="M 385 207 V 235 H 525 V 275" fill="none" stroke="#a1a1aa" stroke-width="2" marker-end="url(#wimb-architecture-arrow)" />
+<path d="M 280 311 H 400" fill="none" stroke="#a1a1aa" stroke-width="2" marker-end="url(#wimb-architecture-arrow)" />
+<path d="M 475 347 V 400 H 155 V 445" fill="none" stroke="#a1a1aa" stroke-width="2" marker-end="url(#wimb-architecture-arrow)" />
+<path d="M 575 347 V 445" fill="none" stroke="#a1a1aa" stroke-width="2" marker-end="url(#wimb-architecture-arrow)" />
+<text x="155" y="225" fill="#a1a1aa" text-anchor="middle" font-size="12">Pages</text>
+<text x="525" y="225" fill="#a1a1aa" text-anchor="middle" font-size="12">/api</text>
+<text x="340" y="295" fill="#a1a1aa" text-anchor="middle" font-size="12">Appels SSR</text>
+<g><rect x="220" y="15" width="240" height="72" rx="10" fill="#27272a" stroke="#71717a" /><text x="340.0" y="44" text-anchor="middle" fill="#fafafa" font-size="16" font-weight="600">Navigateur</text><text x="340.0" y="66" text-anchor="middle" fill="#d4d4d8" font-size="12">Pages et interactions</text></g>
+<g><rect x="220" y="135" width="240" height="72" rx="10" fill="#27272a" stroke="#71717a" /><text x="340.0" y="164" text-anchor="middle" fill="#fafafa" font-size="16" font-weight="600">Caddy</text><text x="340.0" y="186" text-anchor="middle" fill="#d4d4d8" font-size="12">Entrée HTTP / HTTPS</text></g>
+<g><rect x="30" y="275" width="250" height="72" rx="10" fill="#27272a" stroke="#71717a" /><text x="155.0" y="304" text-anchor="middle" fill="#fafafa" font-size="16" font-weight="600">Nuxt</text><text x="155.0" y="326" text-anchor="middle" fill="#d4d4d8" font-size="12">Rendu serveur et frontend</text></g>
+<g><rect x="400" y="275" width="250" height="72" rx="10" fill="#27272a" stroke="#71717a" /><text x="525.0" y="304" text-anchor="middle" fill="#fafafa" font-size="16" font-weight="600">Symfony · API Platform</text><text x="525.0" y="326" text-anchor="middle" fill="#d4d4d8" font-size="12">Servis par FrankenPHP</text></g>
+<g><rect x="30" y="445" width="250" height="72" rx="10" fill="#27272a" stroke="#71717a" /><text x="155.0" y="474" text-anchor="middle" fill="#fafafa" font-size="16" font-weight="600">Volumes locaux</text><text x="155.0" y="496" text-anchor="middle" fill="#d4d4d8" font-size="12">Images et compteurs</text></g>
+<g><rect x="400" y="445" width="250" height="72" rx="10" fill="#27272a" stroke="#71717a" /><text x="525.0" y="474" text-anchor="middle" fill="#fafafa" font-size="16" font-weight="600">PostgreSQL</text><text x="525.0" y="496" text-anchor="middle" fill="#d4d4d8" font-size="12">Données et sessions de refresh</text></g>
+</svg>
+</div>
+<figcaption style={{ color: "#a1a1aa", fontSize: "0.875rem", marginTop: "0.75rem" }}>Les flèches indiquent le sens des appels. Les réponses suivent le chemin inverse. Les échanges SSR et les accès à la base utilisent des réseaux privés.</figcaption>
+</figure>
+)}
+
+## Une session cohérente entre serveur et navigateur
+
+### LexikJWT et Gesdinet: deux rôles complémentaires
+
+**LexikJWTAuthenticationBundle<sup>[\[16\]](#ref-lexik)</sup>** gère les JWT d'accès, d'une durée de quinze minutes. **Gesdinet JWT Refresh Token Bundle<sup>[\[17\]](#ref-gesdinet)</sup>** fournit la base de gestion des jetons de renouvellement et leur émission à la connexion. La rotation et la révocation passent ensuite par un service applicatif dédié, pour maîtriser leur comportement concurrent.
+
+Le JWT d'accès est conservé en mémoire côté navigateur. Le jeton de renouvellement, valable trente jours, utilise un cookie `HttpOnly`, `SameSite=Strict` et `Secure` en production. Il n'est pas exposé au JavaScript et aucun jeton d'authentification n'est conservé dans le `localStorage`.
+
+Le cookie porte sur `/` afin que Nuxt<sup>[\[7\]](#ref-nuxt)</sup> puisse restaurer la session lors d'une requête de page. Le serveur relaie le cookie de renouvellement uniquement aux routes d'authentification concernées, puis utilise le JWT pour les lectures authentifiées. Les nouveaux cookies sont transmis au navigateur. Le jeton de renouvellement n'est jamais sérialisé dans le contenu de la page.
+
+### Gérer les renouvellements concurrents et les pannes
+
+Plusieurs appels ou onglets peuvent tenter un renouvellement en même temps. Le client mutualise les demandes au sein d'une même instance. Côté API, une transaction avec verrou de ligne protège la rotation dans PostgreSQL<sup>[\[5\]](#ref-postgresql)</sup>.
+
+Une fenêtre de grâce de dix secondes permet à des demandes concurrentes utilisant le jeton précédent de recevoir le même successeur. Répéter la demande ne prolonge ni cette fenêtre ni l'expiration du successeur. Ce mécanisme couvre les courses courantes, sans rendre l'ancien jeton réutilisable indéfiniment.
+
+Une session invalide et une panne temporaire n'ont pas le même sens. Un refus d'authentification efface l'état connecté. Une erreur réseau ou serveur place l'interface dans un état dégradé avec possibilité de reprise. Les réponses tardives d'une ancienne session sont écartées pour éviter de réinjecter les données d'un autre compte.
+
+Les réponses API et les pages rendues utilisent actuellement `Cache-Control: private, no-store`. Ce choix privilégie la séparation des données personnelles et simplifie les règles de cache, au prix d'une moindre mise en cache des lectures publiques. Une optimisation ultérieure devra distinguer les réponses anonymes des réponses personnalisées.
+
+## Faire respecter la visibilité dans l'API
+
+Les **voters Symfony<sup>[\[18\]](#ref-voters)</sup>** vérifient les droits sur une recette: lecture, gestion par son auteur, état de publication, modération et rôle administrateur. Les collections sont également filtrées côté serveur: masquer une fiche dans l'interface ne suffirait pas si elle restait accessible par son URL ou dans une recherche.
+
+Le caractère alcoolisé d'une recette est calculé à partir de ses ingrédients, avec une possibilité de correction administrative. Les visiteurs anonymes et les comptes déclarés mineurs accèdent uniquement aux recettes sans alcool. Les comptes adultes peuvent accéder aux recettes alcoolisées et les administrateurs disposent d'une dérogation. Il s'agit d'une règle fondée sur la date de naissance déclarée, pas d'une vérification d'identité.
+
+Ces décisions s'appliquent aussi à la diffusion des images. Une recette devenue inaccessible ne doit pas continuer à exposer son illustration par une URL statique indépendante de ses droits.
+
+## Enregistrer une recette comme un ensemble
+
+L'éditeur transmet les métadonnées, les catégories, les ingrédients et les étapes dans une requête d'enregistrement groupée. Le backend valide la structure, résout les références et construit une proposition indépendante avant de modifier les collections persistées.
+
+Cette proposition permet de vérifier les droits sur le résultat demandé. Par exemple, un utilisateur ne doit pas pouvoir transformer une recette accessible en recette alcoolisée si son profil ne l'autorise pas. Si la recette est déjà publiée, son édition doit aussi préserver les conditions de publication.
+
+L'enregistrement se fait ensuite dans une transaction Doctrine<sup>[\[4\]](#ref-doctrine)</sup>. Une erreur pendant l'opération ne doit pas laisser les nouvelles étapes associées aux anciens ingrédients. L'upload de l'image utilise une opération séparée, avec sa propre gestion du fichier et de la transaction.
+
+{(
+
+<figure class="not-prose my-8" style={{ marginLeft: 0, marginRight: 0 }}>
+<div style={{ overflowX: "auto" }} tabIndex="0" role="region" aria-label="Enregistrement d'une recette">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 500" role="img" aria-labelledby="wimb-save-title wimb-save-desc" style={{ width: "100%", minWidth: "580px", height: "auto", fontFamily: "inherit" }}>
+<title id="wimb-save-title">Enregistrement d'une recette</title>
+<desc id="wimb-save-desc">L'éditeur transmet la recette complète. L'API valide la proposition et les droits. En cas de refus, les données restent inchangées. Sinon une transaction applique toutes les modifications et les valide ensemble, ou les annule en cas d'échec.</desc>
+<defs><marker id="wimb-save-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#a1a1aa" /></marker></defs>
+<path d="M 200 87 V 145" fill="none" stroke="#a1a1aa" stroke-width="2" marker-end="url(#wimb-save-arrow)" />
+<path d="M 375 181 H 445" fill="none" stroke="#a1a1aa" stroke-width="2" marker-end="url(#wimb-save-arrow)" />
+<path d="M 200 217 V 285" fill="none" stroke="#a1a1aa" stroke-width="2" marker-end="url(#wimb-save-arrow)" />
+<path d="M 375 321 H 445" fill="none" stroke="#a1a1aa" stroke-width="2" marker-end="url(#wimb-save-arrow)" />
+<path d="M 200 357 V 415" fill="none" stroke="#a1a1aa" stroke-width="2" marker-end="url(#wimb-save-arrow)" />
+<text x="295" y="253" fill="#a1a1aa" text-anchor="middle" font-size="12">Proposition acceptée</text>
+<text x="295" y="388" fill="#a1a1aa" text-anchor="middle" font-size="12">Commit réussi</text>
+<g><rect x="25" y="15" width="350" height="72" rx="10" fill="#27272a" stroke="#71717a" /><text x="200.0" y="44" text-anchor="middle" fill="#fafafa" font-size="16" font-weight="600">Éditeur de recette</text><text x="200.0" y="66" text-anchor="middle" fill="#d4d4d8" font-size="12">Métadonnées, ingrédients et étapes</text></g>
+<g><rect x="25" y="145" width="350" height="72" rx="10" fill="#27272a" stroke="#71717a" /><text x="200.0" y="174" text-anchor="middle" fill="#fafafa" font-size="16" font-weight="600">Validation de la proposition</text><text x="200.0" y="196" text-anchor="middle" fill="#d4d4d8" font-size="12">Structure, références et autorisations</text></g>
+<g><rect x="445" y="145" width="210" height="72" rx="10" fill="#27272a" stroke="#71717a" /><text x="550.0" y="174" text-anchor="middle" fill="#fafafa" font-size="16" font-weight="600">Demande refusée</text><text x="550.0" y="196" text-anchor="middle" fill="#d4d4d8" font-size="12">Aucune modification en base</text></g>
+<g><rect x="25" y="285" width="350" height="72" rx="10" fill="#27272a" stroke="#71717a" /><text x="200.0" y="314" text-anchor="middle" fill="#fafafa" font-size="16" font-weight="600">Transaction en base</text><text x="200.0" y="336" text-anchor="middle" fill="#d4d4d8" font-size="12">Recette et relations enregistrées</text></g>
+<g><rect x="25" y="415" width="350" height="72" rx="10" fill="#27272a" stroke="#71717a" /><text x="200.0" y="444" text-anchor="middle" fill="#fafafa" font-size="16" font-weight="600">Enregistrement validé</text><text x="200.0" y="466" text-anchor="middle" fill="#d4d4d8" font-size="12">Brouillon ou publication préservée</text></g>
+<g><rect x="445" y="285" width="210" height="72" rx="10" fill="#27272a" stroke="#71717a" /><text x="550.0" y="314" text-anchor="middle" fill="#fafafa" font-size="16" font-weight="600">Transaction annulée</text><text x="550.0" y="336" text-anchor="middle" fill="#d4d4d8" font-size="12">Modifications annulées</text></g>
+</svg>
+</div>
+<figcaption style={{ color: "#a1a1aa", fontSize: "0.875rem", marginTop: "0.75rem" }}>Une nouvelle recette est créée en brouillon. La publication est une action distincte. L'édition d'une recette déjà publiée doit préserver ses conditions de publication. L'image suit une opération séparée.</figcaption>
+</figure>
+)}
+
+La publication dispose d'une validation centralisée: métadonnées valides, ingrédients présents et étapes renseignées. Cette validation s'applique aux différentes routes qui peuvent publier une recette, y compris les opérations administratives concernées.
+
+Les favoris répondent à un autre problème de cohérence: **répéter un ajout ne doit pas augmenter plusieurs fois le compteur**. Une contrainte unique sur le couple utilisateur-recette et un `INSERT ... ON CONFLICT DO NOTHING` rendent l'ajout idempotent. Le compteur n'est modifié que lorsqu'une ligne est réellement créée ou supprimée, dans la même transaction.
+
+## Valider les images et contrôler leur diffusion
+
+Les uploads acceptent les formats JPEG, PNG et WebP, avec des limites de poids, de dimensions et de nombre total de pixels. La vérification ne se contente pas de l'extension ou du type MIME annoncé: **GD<sup>[\[19\]](#ref-gd)</sup>** doit pouvoir décoder l'image.
+
+Les pixels sont ensuite copiés dans une nouvelle image, redimensionnés et réencodés. Les fichiers d'origine et leurs métadonnées ne sont pas publiés tels quels. Les avatars sont limités à 512 pixels sur leur plus grand côté, les images de recettes à 1 600 pixels, sans agrandissement des petites images.
+
+Lors d'un remplacement, l'ancien fichier reste disponible jusqu'à la validation de la transaction en base. Le nettoyage vérifie qu'il n'est plus référencé avant de le supprimer. Les fichiers orphelins disposent d'une commande de maintenance avec un mode de prévisualisation.
+
+Les images de recettes sont servies par une route API qui réévalue les droits de lecture. Leur chemin de stockage ne donne pas accès directement au fichier. Pour les lectures authentifiées, le frontend récupère l'image avec le JWT et crée une URL temporaire en mémoire. Les identifiants ne figurent pas dans l'URL. Les avatars restent publics.
+
+## Limiter les abus et maîtriser les collections
+
+**Symfony RateLimiter<sup>[\[20\]](#ref-rate-limiter)</sup>** limite les tentatives de connexion et d'inscription ainsi que les écritures authentifiées. Les budgets reposent sur l'adresse IP, le couple IP-adresse e-mail ou l'utilisateur selon l'opération. Les refus renvoient un statut `429` accompagné de `Retry-After` pour indiquer le délai d'attente.
+
+Les compteurs sont conservés dans un volume local persistant et leurs mises à jour sont protégées par un verrou. Cette solution convient à l'hébergement sur un seul VPS. Plusieurs instances réparties sur plusieurs machines nécessiteraient de revoir ce stockage. La confiance accordée aux en-têtes d'adresse IP est limitée aux proxies configurés.
+
+Les recettes sont paginées côté API. Le frontend exploite les métadonnées de collection pour connaître le total et les pages disponibles, plutôt que de confondre la longueur de la page reçue avec la taille du catalogue. Les filtres restent dans l'URL et leur modification réinitialise la pagination. Les commentaires disposent eux aussi d'une pagination et les requêtes d'édition limitent le nombre d'éléments acceptés.
+
+## Du développement au déploiement
+
+**Docker Compose<sup>[\[21\]](#ref-docker)</sup>** fournit l'environnement de développement et l'assemblage des services en production. Sur le VPS, l'API et le serveur web utilisent deux images distinctes, avec PostgreSQL<sup>[\[5\]](#ref-postgresql)</sup> et des volumes pour les uploads et les compteurs de limitation. Les conteneurs applicatifs ne publient pas de ports directement sur l'hôte. Le reverse proxy partagé assure l'entrée publique.
+
+**GitHub Actions<sup>[\[22\]](#ref-actions)</sup>** exécute les validations backend, frontend et conteneurs. Un job `Release gate` exige la réussite des trois avant la publication des images sur **GHCR<sup>[\[23\]](#ref-ghcr)</sup>**, identifiées par le SHA du commit.
+
+Le workflow de déploiement écarte une révision qui n'est plus la tête de `main` au moment du contrôle, résout les images par digest, applique les migrations et attend que les services soient sains. Il vérifie également les routes publiques de contrôle. Un verrou sur le VPS sérialise les opérations et les références de la version précédente sont conservées pour faciliter une intervention en cas d'échec.
+
+La persistance dépasse la base de données: une restauration cohérente doit associer PostgreSQL<sup>[\[5\]](#ref-postgresql)</sup> aux fichiers uploadés. Le stockage local simplifie cette première mise en production, mais implique de gérer les sauvegardes, l'espace disque et le nettoyage des fichiers dans l'exploitation du serveur.
+
+## Vérifier les parcours, pas seulement les composants
+
+Le backend associe **PHPUnit<sup>[\[24\]](#ref-phpunit)</sup>** et **PHPStan<sup>[\[25\]](#ref-phpstan)</sup>** aux contrôles de migrations et de schéma. Le frontend utilise **Vitest<sup>[\[26\]](#ref-vitest)</sup>**, le contrôle TypeScript<sup>[\[9\]](#ref-typescript)</sup> et des scénarios **Playwright<sup>[\[27\]](#ref-playwright)</sup>**.
+
+Les tests navigateur avec API simulée sont complétés par une suite sur la stack réelle. Celle-ci exerce notamment la connexion, le renouvellement concurrent, la restauration de session pendant le rendu serveur, les règles de visibilité, la publication, les images et la modération.
+
+Les validations des conteneurs vérifient également le routage et la persistance après recréation des services. Elles apportent une couverture différente des tests unitaires: une fonctionnalité correcte isolément doit encore fonctionner avec les images et les réseaux utilisés pour le déploiement.
+
+## Bilan et pistes d'amélioration
+
+WhatsInMyBar m'a permis de travailler sur une application dont la cohérence se joue entre plusieurs couches: le contrat HTTP, le rendu serveur, les autorisations, la base de données et les fichiers. Les difficultés les plus intéressantes apparaissent lorsqu'une opération est répétée, interrompue ou exécutée en parallèle.
+
+Les prochaines évolutions concernent notamment la récupération de mot de passe, la vérification de l'adresse e-mail et la suppression de compte en libre-service. Ces parcours restent à développer et nécessitent une base d'envoi d'e-mails adaptée.
+
+L'enrichissement du catalogue public est également essentiel: la qualité des recettes et des illustrations rendra la découverte plus intéressante dès la première visite. Côté technique, une mise en cache ciblée des contenus anonymes et une meilleure observabilité permettraient de faire évoluer l'application à partir de son usage réel.
+
+## Références techniques
+
+Les numéros dans le texte renvoient aux documentations officielles des bibliothèques et outils utilisés.
+
+1. <span id="ref-symfony" style={{ scrollMarginTop: "6rem" }}></span>
+   [Symfony](https://symfony.com/doc/): Services, validation et sécurité.
+2. <span id="ref-php" style={{ scrollMarginTop: "6rem" }}></span>
+   [PHP](https://www.php.net/manual/en/): Manuel du langage.
+3. <span id="ref-api-platform" style={{ scrollMarginTop: "6rem" }}></span>[API
+   Platform](https://api-platform.com/docs/core/): Ressources, opérations,
+   sérialisation et pagination.
+4. <span id="ref-doctrine" style={{ scrollMarginTop: "6rem" }}></span>[Doctrine
+   ORM](https://www.doctrine-project.org/projects/orm.html): Relations,
+   persistance et transactions.
+5. <span id="ref-postgresql" style={{ scrollMarginTop: "6rem" }}></span>
+   [PostgreSQL 16](https://www.postgresql.org/docs/16/): Transactions,
+   contraintes et verrous.
+6. <span id="ref-dbal" style={{ scrollMarginTop: "6rem" }}></span>[Doctrine
+   DBAL](https://www.doctrine-project.org/projects/dbal.html): Accès SQL et
+   gestion des connexions.
+7. <span id="ref-nuxt" style={{ scrollMarginTop: "6rem" }}></span>
+   [Nuxt](https://nuxt.com/docs/4.x/guide/concepts/rendering): Rendu serveur et
+   hydratation.
+8. <span id="ref-vue" style={{ scrollMarginTop: "6rem" }}></span>
+   [Vue](https://vuejs.org/guide/introduction.html): Composants et réactivité.
+9. <span id="ref-typescript" style={{ scrollMarginTop: "6rem" }}></span>
+   [TypeScript](https://www.typescriptlang.org/docs/): Typage du frontend.
+10. <span id="ref-tailwind" style={{ scrollMarginTop: "6rem" }}></span>[Tailwind
+    CSS](https://tailwindcss.com/docs): Styles utilitaires.
+11. <span id="ref-shadcn-vue" style={{ scrollMarginTop: "6rem" }}></span>
+    [shadcn-vue](https://www.shadcn-vue.com/docs/introduction): Composants
+    adaptables dans le projet.
+12. <span id="ref-shadcn-nuxt" style={{ scrollMarginTop: "6rem" }}></span>
+    [shadcn-nuxt](https://www.shadcn-vue.com/docs/installation/nuxt):
+    Intégration des composants dans Nuxt.
+13. <span id="ref-reka" style={{ scrollMarginTop: "6rem" }}></span>[Reka
+    UI](https://reka-ui.com/docs/overview/introduction): Primitives de
+    composants d'interface.
+14. <span id="ref-caddy" style={{ scrollMarginTop: "6rem" }}></span>
+    [Caddy](https://caddyserver.com/docs/): Reverse proxy et entrée HTTPS.
+15. <span id="ref-frankenphp" style={{ scrollMarginTop: "6rem" }}></span>
+    [FrankenPHP](https://frankenphp.dev/docs/): Serveur applicatif PHP.
+16. <span id="ref-lexik" style={{ scrollMarginTop: "6rem" }}></span>
+    [LexikJWTAuthenticationBundle](https://symfony.com/bundles/LexikJWTAuthenticationBundle/current/index.html):
+    Authentification par JWT.
+17. <span id="ref-gesdinet" style={{ scrollMarginTop: "6rem" }}></span>[Gesdinet
+    JWT Refresh Token
+    Bundle](https://github.com/markitosgv/JWTRefreshTokenBundle): Documentation
+    officielle des jetons de renouvellement.
+18. <span id="ref-voters" style={{ scrollMarginTop: "6rem" }}></span>[Voters
+    Symfony](https://symfony.com/doc/current/security/voters.html): Décisions
+    d'autorisation sur les ressources.
+19. <span id="ref-gd" style={{ scrollMarginTop: "6rem" }}></span>
+    [GD](https://www.php.net/manual/en/book.image.php): Décodage,
+    redimensionnement et réencodage des images.
+20. <span id="ref-rate-limiter" style={{ scrollMarginTop: "6rem" }}></span>
+    [Symfony RateLimiter](https://symfony.com/doc/current/rate_limiter.html):
+    Budgets et fenêtres de limitation.
+21. <span id="ref-docker" style={{ scrollMarginTop: "6rem" }}></span>[Docker
+    Compose](https://docs.docker.com/compose/): Services, réseaux et volumes.
+22. <span id="ref-actions" style={{ scrollMarginTop: "6rem" }}></span>[GitHub
+    Actions](https://docs.github.com/en/actions): Automatisation des validations
+    et du déploiement.
+23. <span id="ref-ghcr" style={{ scrollMarginTop: "6rem" }}></span>[GitHub
+    Container
+    Registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry):
+    Publication des images de conteneurs.
+24. <span id="ref-phpunit" style={{ scrollMarginTop: "6rem" }}></span>
+    [PHPUnit](https://docs.phpunit.de/): Tests automatisés du backend.
+25. <span id="ref-phpstan" style={{ scrollMarginTop: "6rem" }}></span>
+    [PHPStan](https://phpstan.org/user-guide/getting-started): Analyse statique
+    PHP.
+26. <span id="ref-vitest" style={{ scrollMarginTop: "6rem" }}></span>
+    [Vitest](https://vitest.dev/guide/): Tests du frontend.
+27. <span id="ref-playwright" style={{ scrollMarginTop: "6rem" }}></span>
+    [Playwright](https://playwright.dev/docs/intro): Tests dans un navigateur.
+28. <span id="ref-popotion" style={{ scrollMarginTop: "6rem" }}></span>
+    [Popotion](https://github.com/popotion): Projet collectif de troisième année
+    de BUT Informatique à l'origine de WhatsInMyBar. Dépôts de
+    [l'API](https://github.com/popotion/Popotion-API) et du
+    [frontend](https://github.com/popotion/Popotion-Front).
